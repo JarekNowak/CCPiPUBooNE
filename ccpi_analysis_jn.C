@@ -58,7 +58,7 @@ void ccpi_analysis_jn(){            //first bracket
   Variable[22]="PionTMVAPi";
   Variable[23]="MuonTMVAMip";
   Variable[24]="PionTrkEnergy";
-  Variable[25]="MuonTrkEnrgy"
+  Variable[25]="MuonTrkEnrgy";
 
   const int nsamples =6;
   TString Sample[nsamples];
@@ -323,13 +323,13 @@ void ccpi_analysis_jn(){            //first bracket
 
 
 
-	std::string weightFileName = "/home/lar/ipophale/booster_decision_tree/dataset_MIP_BDT/weights/TMVAClassification_BDT.weights.xml";
+	std::string weightFileName = "booster_decision_tree/dataset_MIP_BDT/weights/TMVAClassification_BDT.weights.xml";
 	tmvaReader->BookMVA("BDT",  weightFileName.c_str());
 
-	std::string weightFileName_mu = "/home/lar/ipophale/booster_decision_tree/dataset_muon_BDT/weights/TMVAClassification_BDT.weights.xml";
+	std::string weightFileName_mu = "booster_decision_tree/dataset_muon_BDT/weights/TMVAClassification_BDT.weights.xml";
 	tmvaReader_mu->BookMVA("BDT",  weightFileName_mu.c_str());
 
-	std::string weightFileName_pi = "/home/lar/ipophale/booster_decision_tree/dataset_pion_BDT/weights/TMVAClassification_BDT.weights.xml";
+	std::string weightFileName_pi = "booster_decision_tree/dataset_pion_BDT/weights/TMVAClassification_BDT.weights.xml";
 	tmvaReader_pi->BookMVA("BDT",  weightFileName_pi.c_str());
 
 
