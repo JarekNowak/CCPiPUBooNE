@@ -1,8 +1,3 @@
-The existing script is a procedural implementation for analyzing neutrino interaction events. We'll refactor it into an object-oriented form by creating a class that encapsulates the functionality and the data members.
-
-Here's a possible object-oriented version of the script:
-
-```c++
 #include "TFile.h"
 #include "FV.h"
 #include "TVector2.h"
