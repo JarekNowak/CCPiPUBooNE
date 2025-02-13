@@ -13,7 +13,7 @@
 
 
 
-void ccpi_analysis_jn(){            //first bracket
+void ccpip_analysis_jn(){            //first bracket
 
   const int ncuts=10;
   double Selected[ncuts][6]={0};
@@ -74,7 +74,7 @@ void ccpi_analysis_jn(){            //first bracket
   for(int c=0;c<ncuts;c++){
     for(int v=0;v<nvariables;v++){
       for(int s=0;s<nsamples;s++){
-	//			std::cout<<c<<", "<< v<<", "<< s<<std::endl;	
+	//			std::cout<<c<<", "<< v<<", "<< s<<std::endl;
 	//		Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",100,-1,-1);
 	Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",100,-1,-1);
 
@@ -90,14 +90,13 @@ void ccpi_analysis_jn(){            //first bracket
 
 
 
-
   std::vector<std::string> Files = {"/data/uboone/new_numi_flux/Run1_fhc_new_numi_flux_fhc_pandora_ntuple.root" // //MC overlay - new numi flux
     ,"/data/uboone/new_numi_flux/Run2_fhc_new_numi_flux_fhc_pandora_ntuple.root"
     ,"/data/uboone/new_numi_flux/Run4_fhc_new_numi_flux_fhc_pandora_ntuple.root"
     ,"/data/uboone/new_numi_flux/Run5_fhc_new_numi_flux_fhc_pandora_ntuple.root"
     ,"/data/uboone/EXT/neutrinoselection_filt_run1_beamoff.root" // EXT beam off
     ,"/data/uboone/dirt/prodgenie_numi_uboone_overlay_dirt_fhc_mcc9_run1_v28_all_snapshot.root" // Dirt - the old numi flux
-    //,"/data/uboone/beam_on/neutrinoselection_filt_run1_beamon_beamgood.root" // Data - 
+    //,"/data/uboone/beam_on/neutrinoselection_filt_run1_beamon_beamgood.root" // Data -
   };
 
   std::ofstream output("backtracked_showers.txt");
@@ -119,8 +118,8 @@ void ccpi_analysis_jn(){            //first bracket
 
 
   double dataPoT[4] ={0};   // in e+20 PoT
-  dataPoT[0] = 2.192+3.283; //Run1 inclusind open trigger  
-  dataPoT[1] = 1.268;  //Run2 
+  dataPoT[0] = 2.192+3.283; //Run1 inclusind open trigger
+  dataPoT[1] = 1.268;  //Run2
   dataPoT[2] = 2.075;  //Run4
   dataPoT[3] = 2.231;  //Run5
 
@@ -128,20 +127,20 @@ void ccpi_analysis_jn(){            //first bracket
   MCPoT[0] = 23.282;  //Run1
   MCPoT[1] = 24.9337; //Run2
   MCPoT[2] = 11.04+17.295;//Run4
-  MCPoT[3] = 63.145; //Run5 
+  MCPoT[3] = 63.145; //Run5
 
 
   double totalDataPoT=0;
   double totalMCPoT=0;
 
   double Scale[7] ={1};
-  for(int i=0;i<4;i++){   
+  for(int i=0;i<4;i++){
     Scale[i] = dataPoT[i]/MCPoT[i];      // data/simulation;
     totalDataPoT+=dataPoT[i];
     totalMCPoT+=MCPoT[i];
   }
 
-     
+
   Scale[5] = totalDataPoT/16.739;      // Run1 dirt from David 1.67392e+21
   Scale[4]  = 5748692.0/9199232.0;  // Run1 beam off triggers scaling to beam on triggers
 
@@ -380,7 +379,7 @@ void ccpi_analysis_jn(){            //first bracket
 	trk_bragg_mip_v = 0;
 	shr_start_x_v = 0;
 	shr_start_y_v = 0;
-	shr_start_z_v = 0;	
+	shr_start_z_v = 0;
 	shr_dist_v = 0;
 	shr_moliere_avg_v = 0;
 	shr_moliere_rms_v = 0;
@@ -572,7 +571,7 @@ void ccpi_analysis_jn(){            //first bracket
 
 	  bool signal = false;
 
-	  bool in_fiducial_volume_true = false;  
+	  bool in_fiducial_volume_true = false;
 
 	  int nprotons=0, npions=0, nmuons=0, npionszero=0, npionsmin=0;
 	  if(mc_pdg->size() ) {
@@ -586,17 +585,17 @@ void ccpi_analysis_jn(){            //first bracket
 	      if(mc_pdg->at(i_mc) == 111)      npionszero++;
 	    }
 
-      
+
 	    TVector3 Reco_Vertex(reco_nu_vtx_sce_x,reco_nu_vtx_sce_y,reco_nu_vtx_sce_z);
 	    TVector3 true_vertex(mc_vx->at(0),mc_vy->at(0),mc_vz->at(0));
 
-	    in_fiducial_volume_true = inFV(true_vertex);		
+	    in_fiducial_volume_true = inFV(true_vertex);
 	    bool in_fiducial_volume_reco = inFV(Reco_Vertex);
 
 	    //Signal definition
 	    //      bool signal = false;
 
-						
+
 	    if( (in_fiducial_volume_true) && (nmuons==1) && (npionszero==0) &&  (npions== 1) && (abs(nu_pdg) == 14) ){
 	      signal = true;
 	    }
@@ -616,7 +615,7 @@ void ccpi_analysis_jn(){            //first bracket
 	  bool in_fiducial_volume_reco = inFV(Reco_Vertex);
 
 
-	  //topological score 
+	  //topological score
 
 	  if(topological_score > topo_cut){
 	    sel_passed_topo_cut = true;
@@ -642,14 +641,14 @@ void ccpi_analysis_jn(){            //first bracket
 	    TVector3 endpoint(trk_sce_end_x_v->at(i),trk_sce_end_y_v->at(i),trk_sce_end_z_v->at(i));
 
 	    if(pfp_generation_v->at(i) !=2) continue;
-	
+
 	    if(trk_score_v->at(i) >= 0.5){
 	      nPrimaryTracks++;
 
 	      if(!isContained(endpoint) && (trk_len_v->at(i) > 0) )  uncontained++;
 
 	      if(trk_llr_pid_score_v->at(i) > 0.1  )  nonproton++;
-	
+
 
 	      trk_llr_proto.push_back({i, trk_llr_pid_score_v->at(i)});
 	      trk_ilen.push_back({i, trk_len_v->at(i)});
@@ -659,7 +658,7 @@ void ccpi_analysis_jn(){            //first bracket
 	      nPrimaryShowers++;
 	      shower_index = i;
 	    }
-	
+
 	  }
 
 
@@ -675,9 +674,9 @@ void ccpi_analysis_jn(){            //first bracket
 
 
 
-	  int i_max_len=0; 
+	  int i_max_len=0;
 	  if(trk_ilen.size() > 0) i_max_len = trk_ilen.at(0).first; //index of the longest primary track
-      
+
 
 
 	  TVector3 reco_primary_vtx(reco_nu_vtx_sce_x,reco_nu_vtx_sce_y,reco_nu_vtx_sce_z);
@@ -696,9 +695,9 @@ void ccpi_analysis_jn(){            //first bracket
 
 	    if((pfp_generation_v->at(i_a) ==2) &&(trk_score_v->at(i_a) >= 0.5)
 	       && (trk_llr_pid_score_v->at(i_a) > -1) && (trk_llr_pid_score_v->at(i_a) < 2)
-	       && (trk_bragg_p_v->at(i_a)  > 0) && (trk_bragg_p_v->at(i_a)  < 500) 
+	       && (trk_bragg_p_v->at(i_a)  > 0) && (trk_bragg_p_v->at(i_a)  < 500)
 	       && (trk_bragg_mu_v->at(i_a) > 0) && (trk_bragg_mu_v->at(i_a) < 500)
-	       && (trk_bragg_mip_v->at(i_a)> 0) && (trk_bragg_mip_v->at(i_a)< 500) 
+	       && (trk_bragg_mip_v->at(i_a)> 0) && (trk_bragg_mip_v->at(i_a)< 500)
 	       && (trk_len_v->at(i_a) < 1e6) && (trk_len_v->at(i_a) > 0)
 	       ){
 
@@ -724,8 +723,8 @@ void ccpi_analysis_jn(){            //first bracket
 
 	      //chaned dist to dist_ia to check if it makes ay difference.
 
-	      if(  (trk_score_v->at(i_a) > muon_trk_score) && (nu_to_track_dist_ia.Mag() <= 4) 
-		   &&(trk_len_v->at(i_a) > muon_trk_len) && (trk_llr_pid_score_v->at(i_a) > muon_pid_score) 
+	      if(  (trk_score_v->at(i_a) > muon_trk_score) && (nu_to_track_dist_ia.Mag() <= 4)
+		   &&(trk_len_v->at(i_a) > muon_trk_len) && (trk_llr_pid_score_v->at(i_a) > muon_pid_score)
 		   &&  (tmvaOutput_mip >= -0.1)){
 
 
@@ -748,8 +747,8 @@ void ccpi_analysis_jn(){            //first bracket
 			   (pfnplanehits_V->at(muon_index)>=1)&& (pfnplanehits_Y->at(muon_index)>=1));
 	  }
 
-							
-      
+
+
 
 
 	  //PION INDEX SELECTION
@@ -797,7 +796,7 @@ void ccpi_analysis_jn(){            //first bracket
 	      trk_sce_end_y_v_tmva_pi = trk_sce_end_y_v->at(i_b);
 	      trk_sce_end_z_v_tmva_pi = trk_sce_end_z_v->at(i_b);
 	      tmvaOutput_pi = tmvaReader_pi->EvaluateMVA("BDT");
-	
+
 
 
 	      if ( (trk_llr_pid_score_v->at(i_b) > 0.1) && (nu_to_track_dist_ib.Mag() < 9.0)
@@ -824,10 +823,10 @@ void ccpi_analysis_jn(){            //first bracket
 	    TVector3 pion_endpoint(trk_sce_end_x_v->at(pion_index),trk_sce_end_y_v->at(pion_index),trk_sce_end_z_v->at(pion_index));
 
 	    if ((isContained(pion_endpoint)) )      	sel_contained_pions = true;
-   
+
 	  }
 
-    
+
 
 
 	  bool opening_angle_cut=false;
@@ -838,45 +837,45 @@ void ccpi_analysis_jn(){            //first bracket
 	    if(mu_pi_opening_angle<2.6) opening_angle_cut = true;
 	  }
 
-     
 
-	  //Shower cut 
- 
-      
+
+	  //Shower cut
+
+
 	  if(nPrimaryShowers==1){
 
 	    TVector3 shower_start (trk_sce_start_x_v->at(shower_index),trk_sce_start_y_v->at(shower_index),trk_sce_start_z_v->at(shower_index));
 	    TVector3 nu_to_shower_dist (shower_start - reco_primary_vtx);
 
 
-	      
+
 	    // std::cout<<nPrimaryShowers<<"\t"<<shower_index<<"\t"<<nu_to_shower_dist.Mag()<<std::endl;
-	
+
 	    if((pfnplanehits_Y->at(shower_index)<50) && (pfnplanehits_Y->at(shower_index)>test) && (nu_to_shower_dist.Mag()>10)){
 
 	      shower_cut = true ;
 	    }
 
 	    //	  if(shr_moliere_avg_v->at(i_c) < 200){
-								
+
 	    //	    mol_avg = true;
 	    //	  }
 
 	  }
 	  else if (nPrimaryShowers==0)  shower_cut = true ;
 
-      
 
-	      
+
+
 	  Cuts[0] = true;// in_fiducial_volume_true;  //all events with entries in true FV
 	  Cuts[1] = Cuts[0] && in_fiducial_volume_reco; // Events in fiducial volume
-	  Cuts[2] = Cuts[1] && sel_passed_topo_cut;// Topological score 
+	  Cuts[2] = Cuts[1] && sel_passed_topo_cut;// Topological score
 	  Cuts[3] = Cuts[2] && sel_has_muon_candidate;// Muon candidate
 	  Cuts[4] = Cuts[3] && sel_contained_pions; //Contained charged pion
 	  Cuts[5] = Cuts[4] && muon_in_gap;
 	  Cuts[6] = Cuts[5] && pion_in_gap;
 	  Cuts[7] = Cuts[6] && shower_cut; //no or one shower with conditions
-	  Cuts[8] = Cuts[7] && opening_angle_cut; //muon-pion opening angle cut 
+	  Cuts[8] = Cuts[7] && opening_angle_cut; //muon-pion opening angle cut
 	  Cuts[9] = Cuts[8] && (nonproton == 2); // no other charged pions
 
 
@@ -885,7 +884,7 @@ void ccpi_analysis_jn(){            //first bracket
 
 	  //Filling histograms for all variables and cuts for signal and background
 	  for(int c=0; c<ncuts; c++){
-	
+
 	    int s=-1;
 	    if((i_f < 4) && signal ) s = 0;
 	    else if ((i_f <4) && !signal) s = 1;
@@ -898,9 +897,9 @@ void ccpi_analysis_jn(){            //first bracket
 
 	      Selected[c][s] += Scale[i_f];
 //	      std::cout<<CutsName[c]<<"\t"<<Sample[s]<<"\t"<<i_f<<"\t"<<  Scale[i_f]<<"\t"<<Selected[c][s]<<std::endl;
-		
-	      Histos[c][s][0]->Fill(topological_score,Scale[i_f]); //Variable[0]="Topological Score"; 
-     	
+
+	      Histos[c][s][0]->Fill(topological_score,Scale[i_f]); //Variable[0]="Topological Score";
+
 	      if(muon_index!=-1) {
 		TVector3 muon_start (trk_sce_start_x_v->at(muon_index),trk_sce_start_y_v->at(muon_index),trk_sce_start_z_v->at(muon_index));
 		TVector3 nu_to_track_dist (muon_start - reco_primary_vtx);
@@ -1012,12 +1011,12 @@ void ccpi_analysis_jn(){            //first bracket
 
 	      Histos[c][s][18]->Fill(nPrimaryShowers,Scale[i_f]); // Variable[18]="NPrimaryShowers";
 	      Histos[c][s][19]->Fill(nPrimaryTracks,Scale[i_f]); // Variable[19]="NPrimaryTracks";
-	
 
 
 
 
-	    } 
+
+	    }
 	  }
 
 
@@ -1034,7 +1033,7 @@ void ccpi_analysis_jn(){            //first bracket
       TFile *myfile = new TFile("histograms.root","RECREATE");
       for(int c=0;c<ncuts;c++){
         for(int v=0;v<nvariables;v++){
-	
+
 	  for(int s=0;s<nsamples;s++){
 
 	    Histos[c][s][v]->Write();
@@ -1063,7 +1062,7 @@ void ccpi_analysis_jn(){            //first bracket
 		 <<"\t \t "<<purity
 		 <<"\t\t\t"<<efficiency*purity
 		 << std::endl;
-        
+
       }
 
 
@@ -1081,7 +1080,7 @@ void ccpi_analysis_jn(){            //first bracket
 	     Histos[c][5][i]->Add(Histos[c][3][i]);
 	  */
 
-  
+
 	  Histos[c][0][i]->Draw();
 	  Histos[c][1][i]->Draw("same");
 	  Histos[c][2][i]->Draw("same");
