@@ -13,10 +13,10 @@
 
 
 
-void ccpip_analysis_jn(){            //first bracket
+void multipion_analysis(){            //first bracket
 
   const int ncuts=10;
-  double Selected[ncuts][6]={0};
+  double Selected[ncuts][6][10]={0};
 
   TString CutsName[ncuts];
   CutsName[0]="EventsInTrueFV";
@@ -69,19 +69,36 @@ void ccpip_analysis_jn(){            //first bracket
   Sample[4]="Data";
   Sample[5]="MC";
 
-  TH1F *Histos[ncuts][nsamples][nvariables];
+
+
+  const int npions=10;
+  TString Pions[npions];
+  Pions[0]="0 pions";
+  Pions[1]="1 pions";
+  Pions[2]="2 pions";
+  Pions[3]="3 pions";
+  Pions[4]="4 pions";
+  Pions[5]="5 pions";
+  Pions[6]="6 pions";
+  Pions[7]="7 pions";
+  Pions[8]="8 pions";
+  Pions[9]="9 pions";
+
+
+  TH1F *Histos[ncuts][nsamples][nvariables][npions];
 
   for(int c=0;c<ncuts;c++){
     for(int v=0;v<nvariables;v++){
       for(int s=0;s<nsamples;s++){
-	//			std::cout<<c<<", "<< v<<", "<< s<<std::endl;
-	//		Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",100,-1,-1);
-	Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",100,-1,-1);
+	 for(int p=0;p<npions; p++){
+	
+        Histos[c][s][v][p] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s]+"_"+Pions[p],"",100,-1,-1);
 
-	if(s!=4) Histos[c][s][v] ->SetLineColor(s+1);
-	Histos[c][s][v] ->GetXaxis()->SetTitle(Variable[v]);
-	Histos[c][s][v] ->SetTitle(CutsName[c]);
+	if(s!=4) Histos[c][s][v][p] ->SetLineColor(s+1);
+	Histos[c][s][v][p] ->GetXaxis()->SetTitle(Variable[v]);
+	Histos[c][s][v][p] ->SetTitle(CutsName[c]);
 
+	 }
       }
     }
   }
@@ -91,12 +108,12 @@ void ccpip_analysis_jn(){            //first bracket
 
 
   std::vector<std::string> Files = {"/data/uboone/new_numi_flux/Run1_fhc_new_numi_flux_fhc_pandora_ntuple.root" // //MC overlay - new numi flux
-    ,"/data/uboone/new_numi_flux/Run2_fhc_new_numi_flux_fhc_pandora_ntuple.root"
-    ,"/data/uboone/new_numi_flux/Run4_fhc_new_numi_flux_fhc_pandora_ntuple.root"
-    ,"/data/uboone/new_numi_flux/Run5_fhc_new_numi_flux_fhc_pandora_ntuple.root"
-    ,"/data/uboone/EXT/neutrinoselection_filt_run1_beamoff.root" // EXT beam off
-    ,"/data/uboone/dirt/prodgenie_numi_uboone_overlay_dirt_fhc_mcc9_run1_v28_all_snapshot.root" // Dirt - the old numi flux
-    //,"/data/uboone/beam_on/neutrinoselection_filt_run1_beamon_beamgood.root" // Data -
+   				   ,"/data/uboone/new_numi_flux/Run2_fhc_new_numi_flux_fhc_pandora_ntuple.root"
+			           ,"/data/uboone/new_numi_flux/Run4_fhc_new_numi_flux_fhc_pandora_ntuple.root"
+  			           ,"/data/uboone/new_numi_flux/Run5_fhc_new_numi_flux_fhc_pandora_ntuple.root"
+			           ,"/data/uboone/EXT/neutrinoselection_filt_run1_beamoff.root" // EXT beam off
+ 		                   ,"/data/uboone/dirt/prodgenie_numi_uboone_overlay_dirt_fhc_mcc9_run1_v28_all_snapshot.root" // Dirt - the old numi flux
+			           //,"/data/uboone/beam_on/neutrinoselection_filt_run1_beamon_beamgood.root" // Data -
   };
 
   std::ofstream output("backtracked_showers.txt");
@@ -154,7 +171,9 @@ void ccpip_analysis_jn(){            //first bracket
 
       for(int cc=0;cc<ncuts;cc++){
 	for(int j=0;j<7;j++){
-	  Selected[cc][j]=0;
+           for(int p=0;p<npions;p++){
+    		  Selected[cc][j][p]=0;
+	   }
 	}
       }
 
@@ -168,13 +187,6 @@ void ccpip_analysis_jn(){            //first bracket
 
 	f->GetObject("nuselection/NeutrinoSelectionFilter", t);
 
-	/*
-	  if(Files.at(i_f).find("beamoff") != std::string::npos){
-	  f->GetObject("nuselection/NeutrinoSelectionFilter",t);
-	  } else {
-	  f->GetObject("NeutrinoSelectionFilter", t);
-	  }
-	*/
 
 	std::cout << "Processing file: " << Files.at(i_f) << std::endl;
 	if (!t) {
@@ -569,11 +581,11 @@ void ccpip_analysis_jn(){            //first bracket
 
 
 
-	  bool signal = false;
+	  bool signal[10] = {false};
 
 	  bool in_fiducial_volume_true = false;
 
-	  int nprotons=0, npions=0, nmuons=0, npionszero=0, npionsmin=0;
+	  int nprotons=0, nchargedpions=0, nmuons=0, npionszero=0, npionsmin=0;
 	  if(mc_pdg->size() ) {
 
 
@@ -581,7 +593,7 @@ void ccpip_analysis_jn(){            //first bracket
 
 	      if(mc_pdg->at(i_mc) == 2212)     nprotons++;
 	      if(abs(mc_pdg->at(i_mc)) == 13)  nmuons++;
-	      if(abs(mc_pdg->at(i_mc)) == 211) npions++;
+	      if(abs(mc_pdg->at(i_mc)) == 211) nchargedpions++;
 	      if(mc_pdg->at(i_mc) == 111)      npionszero++;
 	    }
 
@@ -596,8 +608,9 @@ void ccpip_analysis_jn(){            //first bracket
 	    //      bool signal = false;
 
 
-	    if( (in_fiducial_volume_true) && (nmuons==1) && (npionszero==0) &&  (npions== 1) && (abs(nu_pdg) == 14) ){
-	      signal = true;
+	    if( (in_fiducial_volume_true) && (nmuons==1) && (npionszero==0)  && (abs(nu_pdg) == 14) ){
+//              if(nchargedpions>0) std::cout<<nchargedpions<<std::endl;
+	      signal[nchargedpions] = true; //
 	    }
 
 	  }
@@ -884,10 +897,10 @@ void ccpip_analysis_jn(){            //first bracket
 
 	  //Filling histograms for all variables and cuts for signal and background
 	  for(int c=0; c<ncuts; c++){
-
+	     for(int p=0;p<npions;p++){
 	    int s=-1;
-	    if((i_f < 4) && signal ) s = 0;
-	    else if ((i_f <4) && !signal) s = 1;
+	    if((i_f < 4) && signal[p] ) s = 0;
+	    else if ((i_f <4) && !signal[p]) s = 1;
 	    else if(i_f == 4) s = 2;//EXT
 	    else if(i_f == 5) s = 3;//Dirt
 	    else if(i_f == 6) s = 4;//Data
@@ -895,21 +908,21 @@ void ccpip_analysis_jn(){            //first bracket
 
 	    if (Cuts[c]){
 
-	      Selected[c][s] += Scale[i_f];
+	      Selected[c][s][p] += Scale[i_f];
 //	      std::cout<<CutsName[c]<<"\t"<<Sample[s]<<"\t"<<i_f<<"\t"<<  Scale[i_f]<<"\t"<<Selected[c][s]<<std::endl;
 
-	      Histos[c][s][0]->Fill(topological_score,Scale[i_f]); //Variable[0]="Topological Score";
+	      Histos[c][s][0][p]->Fill(topological_score,Scale[i_f]); //Variable[0]="Topological Score";
 
 	      if(muon_index!=-1) {
 		TVector3 muon_start (trk_sce_start_x_v->at(muon_index),trk_sce_start_y_v->at(muon_index),trk_sce_start_z_v->at(muon_index));
 		TVector3 nu_to_track_dist (muon_start - reco_primary_vtx);
 
-		Histos[c][s][1]->Fill(trk_len_v->at(muon_index),Scale[i_f] ); //Variable[1]="Muon track length";
-		Histos[c][s][4]->Fill(trk_llr_pid_score_v->at(muon_index), Scale[i_f] );//  Variable[4]="Muon PID";
-		Histos[c][s][6]->Fill(nu_to_track_dist.Mag(), Scale[i_f]); //Variable[6]="MuonVtxDistance";
-		Histos[c][s][9]->Fill(pfnplanehits_U->at(muon_index), Scale[i_f]);  //Variable[9]="MuonUPlaneHits";
-		Histos[c][s][10]->Fill(pfnplanehits_Y->at(muon_index), Scale[i_f]); //Variable[10]="MuonYPlaneHits";
-		Histos[c][s][11]->Fill(pfnplanehits_V->at(muon_index), Scale[i_f]); //Variable[11]="MuonVPlaneHits";
+		Histos[c][s][1][p]->Fill(trk_len_v->at(muon_index),Scale[i_f] ); //Variable[1]="Muon track length";
+		Histos[c][s][4][p]->Fill(trk_llr_pid_score_v->at(muon_index), Scale[i_f] );//  Variable[4]="Muon PID";
+		Histos[c][s][6][p]->Fill(nu_to_track_dist.Mag(), Scale[i_f]); //Variable[6]="MuonVtxDistance";
+		Histos[c][s][9][p]->Fill(pfnplanehits_U->at(muon_index), Scale[i_f]);  //Variable[9]="MuonUPlaneHits";
+		Histos[c][s][10][p]->Fill(pfnplanehits_Y->at(muon_index), Scale[i_f]); //Variable[10]="MuonYPlaneHits";
+		Histos[c][s][11][p]->Fill(pfnplanehits_V->at(muon_index), Scale[i_f]); //Variable[11]="MuonVPlaneHits";
 
 		float tmvaOutput_mip = 0.0;
 
@@ -925,7 +938,7 @@ void ccpip_analysis_jn(){            //first bracket
 		trk_sce_end_z_v_tmva = trk_sce_end_z_v->at(i_a);
 		tmvaOutput_mip = tmvaReader->EvaluateMVA("BDT");
 
-		Histos[c][s][23]->Fill(tmvaOutput_mip, Scale[i_f] );  //Variable[23]="PionTMVAMip";
+		Histos[c][s][23][p]->Fill(tmvaOutput_mip, Scale[i_f] );  //Variable[23]="PionTMVAMip";
 
 
 	      }
@@ -934,12 +947,12 @@ void ccpip_analysis_jn(){            //first bracket
 		TVector3 pion_start (trk_sce_start_x_v->at(pion_index),trk_sce_start_y_v->at(pion_index),trk_sce_start_z_v->at(pion_index));
 		TVector3 nu_to_track_dist (pion_start - reco_primary_vtx);
 
-		Histos[c][s][2]->Fill(trk_len_v->at(pion_index), Scale[i_f]);//  Variable[2]="Pion track length";
-		Histos[c][s][5]->Fill(trk_llr_pid_score_v->at(pion_index),Scale[i_f] );//  Variable[5]="Pion PID";
-		Histos[c][s][7]->Fill(nu_to_track_dist.Mag(),Scale[i_f]); //Variable[7]="PionVtxDistance";
-		Histos[c][s][12]->Fill(pfnplanehits_U->at(pion_index),Scale[i_f]);  //Variable[12]="PionUPlaneHits";
-		Histos[c][s][13]->Fill(pfnplanehits_Y->at(pion_index),Scale[i_f]);  //Variable[13]="PionYPlaneHits";
-		Histos[c][s][14]->Fill(pfnplanehits_V->at(pion_index),Scale[i_f]);  //Variable[14]="PionVPlaneHits";
+		Histos[c][s][2][p]->Fill(trk_len_v->at(pion_index), Scale[i_f]);//  Variable[2]="Pion track length";
+		Histos[c][s][5][p]->Fill(trk_llr_pid_score_v->at(pion_index),Scale[i_f] );//  Variable[5]="Pion PID";
+		Histos[c][s][7][p]->Fill(nu_to_track_dist.Mag(),Scale[i_f]); //Variable[7]="PionVtxDistance";
+		Histos[c][s][12][p]->Fill(pfnplanehits_U->at(pion_index),Scale[i_f]);  //Variable[12]="PionUPlaneHits";
+		Histos[c][s][13][p]->Fill(pfnplanehits_Y->at(pion_index),Scale[i_f]);  //Variable[13]="PionYPlaneHits";
+		Histos[c][s][14][p]->Fill(pfnplanehits_V->at(pion_index),Scale[i_f]);  //Variable[14]="PionVPlaneHits";
 		float tmvaOutput = 0.0;
 		float tmvaOutput_pi = 0.0;
 		int i_b=pion_index;
@@ -967,8 +980,8 @@ void ccpip_analysis_jn(){            //first bracket
 		tmvaOutput_pi = tmvaReader_pi->EvaluateMVA("BDT");
 
 
-		Histos[c][s][21]->Fill(tmvaOutput,Scale[i_f] );  //Variable[21]="PionTMVAMip";
-		Histos[c][s][22]->Fill(tmvaOutput_pi,Scale[i_f] );  //Variable[22]="PionTMVAPi";
+		Histos[c][s][21][p]->Fill(tmvaOutput,Scale[i_f] );  //Variable[21]="PionTMVAMip";
+		Histos[c][s][22][p]->Fill(tmvaOutput_pi,Scale[i_f] );  //Variable[22]="PionTMVAPi";
 
 
 	      }
@@ -978,8 +991,8 @@ void ccpip_analysis_jn(){            //first bracket
 		TVector3 pion_muon_dist (muon_start - pion_start);
 
 
-		Histos[c][s][3]->Fill(mu_pi_opening_angle,Scale[i_f]);//  Variable[3]="Mu-Pi Opening angle";
-		Histos[c][s][8]->Fill(pion_muon_dist.Mag(),Scale[i_f]); // Variable[8]="MuonPionDistance";
+		Histos[c][s][3][p]->Fill(mu_pi_opening_angle,Scale[i_f]);//  Variable[3]="Mu-Pi Opening angle";
+		Histos[c][s][8][p]->Fill(pion_muon_dist.Mag(),Scale[i_f]); // Variable[8]="MuonPionDistance";
 
 
 
@@ -1001,22 +1014,23 @@ void ccpip_analysis_jn(){            //first bracket
 		TVector3 nu_to_shower_dist (shower_start - reco_primary_vtx);
 
 
-		Histos[c][s][15]->Fill(pfnplanehits_U->at(shower_index),Scale[i_f]);  //Variable[15]="ShowerUPlaneHits";
-		Histos[c][s][16]->Fill(pfnplanehits_Y->at(shower_index),Scale[i_f]);  //Variable[16]="ShowerYPlaneHits";
-		Histos[c][s][17]->Fill(pfnplanehits_V->at(shower_index),Scale[i_f]);  //Variable[17]="ShowerVPlaneHits";
+		Histos[c][s][15][p]->Fill(pfnplanehits_U->at(shower_index),Scale[i_f]);  //Variable[15]="ShowerUPlaneHits";
+		Histos[c][s][16][p]->Fill(pfnplanehits_Y->at(shower_index),Scale[i_f]);  //Variable[16]="ShowerYPlaneHits";
+		Histos[c][s][17][p]->Fill(pfnplanehits_V->at(shower_index),Scale[i_f]);  //Variable[17]="ShowerVPlaneHits";
 
-		Histos[c][s][20]->Fill(nu_to_shower_dist.Mag(),Scale[i_f]);// Variable[20]="ShowerVtxDistance";
+		Histos[c][s][20][p]->Fill(nu_to_shower_dist.Mag(),Scale[i_f]);// Variable[20]="ShowerVtxDistance";
 
 	      }
 
-	      Histos[c][s][18]->Fill(nPrimaryShowers,Scale[i_f]); // Variable[18]="NPrimaryShowers";
-	      Histos[c][s][19]->Fill(nPrimaryTracks,Scale[i_f]); // Variable[19]="NPrimaryTracks";
+	      Histos[c][s][18][p]->Fill(nPrimaryShowers,Scale[i_f]); // Variable[18]="NPrimaryShowers";
+	      Histos[c][s][19][p]->Fill(nPrimaryTracks,Scale[i_f]); // Variable[19]="NPrimaryTracks";
 
 
 
 
 
 	    }
+	     }
 	  }
 
 
@@ -1030,13 +1044,15 @@ void ccpip_analysis_jn(){            //first bracket
       output.close();
 
 
+      for(int p=0;p<npions;p++){
+
       TFile *myfile = new TFile("histograms.root","RECREATE");
       for(int c=0;c<ncuts;c++){
         for(int v=0;v<nvariables;v++){
 
 	  for(int s=0;s<nsamples;s++){
 
-	    Histos[c][s][v]->Write();
+	    Histos[c][s][v][p]->Write();
 	  }
         }
       }
@@ -1044,20 +1060,20 @@ void ccpip_analysis_jn(){            //first bracket
 
 
 
-
+	
       double purity = 0.0;
       double efficiency = 0.0;
-      std::cout<<"test="<<test<<"\t \t \t \t signal  \t \t bckg \t \t \t EXT \t \t \t Dirt \t \t \t DATA \t \t \t efficiency \t purity \t eff*pur\n";
+      std::cout<<"pions="<<p<<"\t \t \t \t signal  \t \t bckg \t \t \t EXT \t \t \t Dirt \t \t \t DATA \t \t \t efficiency \t purity \t eff*pur\n";
       for(int c=0; c<ncuts;c++){
 
-	double purity = Selected[c][0]/double(Selected[c][0]+Selected[c][1] + Selected[c][2] +Selected[c][3] )*100 ;
-	double efficiency = Selected[c][0]/double(Selected[0][0])*100;
+	double purity = Selected[c][0][p]/double(Selected[c][0][p]+Selected[c][1][p] + Selected[c][2][p] +Selected[c][3][p] )*100 ;
+	double efficiency = Selected[c][0][p]/double(Selected[0][0][p])*100;
 
-	std::cout<<CutsName[c]<<"\t \t \t "<<Selected[c][0]<<"("<<Selected[c][0]<<")"
-		 <<"\t \t "<<Selected[c][1]<<"("<<Selected[c][1]<<")"
-		 <<"\t \t "<<Selected[c][2]<<"("<<Selected[c][2]<<")"
-		 <<"\t \t "<<Selected[c][3]<<"("<<Selected[c][3]<<")"
-		 <<"\t \t "<<Selected[c][4]
+	std::cout<<CutsName[c]<<"\t \t \t "<<Selected[c][0][p]
+		 <<"\t \t "<<Selected[c][1][p]
+		 <<"\t \t "<<Selected[c][2][p]
+		 <<"\t \t "<<Selected[c][3][p]
+		 <<"\t \t "<<Selected[c][4][p]
 		 <<"\t\t\t"<<efficiency
 		 <<"\t \t "<<purity
 		 <<"\t\t\t"<<efficiency*purity
@@ -1066,6 +1082,7 @@ void ccpip_analysis_jn(){            //first bracket
       }
 
 
+      /*
       TCanvas *c1 = new TCanvas("c1","",2000,800);
       c1->Divide(5,2);
 
@@ -1074,28 +1091,23 @@ void ccpip_analysis_jn(){            //first bracket
 
 	  c1->cd(c+1);
 
-	  /* Histos[c][5][i]->Add(Histos[c][0][i]);
-	     Histos[c][5][i]->Add(Histos[c][1][i]);
-	     Histos[c][5][i]->Add(Histos[c][2][i]);
-	     Histos[c][5][i]->Add(Histos[c][3][i]);
-	  */
 
 
-	  Histos[c][0][i]->Draw();
-	  Histos[c][1][i]->Draw("same");
-	  Histos[c][2][i]->Draw("same");
-	  Histos[c][3][i]->Draw("same");
-	  Histos[c][4][i]->Draw("same e0");
-	  // Histos[c][0][i]->Draw("same");
+	  Histos[c][0][i][p]->Draw();
+	  Histos[c][1][i][p]->Draw("same");
+	  Histos[c][2][i][p]->Draw("same");
+	  Histos[c][3][i][p]->Draw("same");
+	  Histos[c][4][i][p]->Draw("same e0");
+	  // Histos[c][0][i][p]->Draw("same");
 
 
 	}
 	c1->Print("plots/"+Variable[i]+".png");
       }
+*/
 
 
-
-
+      }//pions 
 
     }//TEST END
 }
