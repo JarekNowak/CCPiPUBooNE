@@ -83,10 +83,10 @@ void ccpi_analysis_jn(){            //first bracket
   for(int c=0;c<ncuts;c++){
     for(int v=0;v<nvariables;v++){
       for(int s=0;s<nsamples;s++){
-	//			std::cout<<c<<", "<< v<<", "<< s<<std::endl;	
-	//		Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",100,-1,-1);
-	Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",100,-1,-1);
-
+	
+ 
+	if(v<28) Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",100,-1,-1);
+	else Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",100,0,2);
 	if(s!=4) Histos[c][s][v] ->SetLineColor(s+1);
 	Histos[c][s][v] ->GetXaxis()->SetTitle(Variable[v]);
 	Histos[c][s][v] ->SetTitle(CutsName[c]);
@@ -268,7 +268,8 @@ void ccpi_analysis_jn(){            //first bracket
 	vector<float>   *trk_mcs_muon_mom_v;
    	vector<float>   *trk_range_muon_mom_v;
 
-
+        Float_t ppfx_cv;
+	Float_t weightTune;
 
 	float trk_bragg_p_v_tmva;
 	float trk_bragg_mu_v_tmva;
@@ -413,8 +414,9 @@ void ccpi_analysis_jn(){            //first bracket
  	trk_mcs_muon_mom_v = 0;
    	trk_range_muon_mom_v = 0;
 
-
-
+        ppfx_cv = 1.0;
+	weightTune = 1.0;
+  
 	t->SetBranchStatus("run",1);
 	t->SetBranchStatus("sub",1);
 	t->SetBranchStatus("evt",1);
@@ -486,7 +488,8 @@ void ccpi_analysis_jn(){            //first bracket
   	t->SetBranchStatus("trk_mcs_muon_mom_v",1);
    	t->SetBranchStatus("trk_range_muon_mom_v",1);
 
- 
+  	t->SetBranchStatus("ppfx_cv",1);
+	t->SetBranchStatus("weightTune",1);
 
 
 
@@ -560,9 +563,11 @@ void ccpi_analysis_jn(){            //first bracket
 	t->SetBranchAddress("shr_tkfit_dedx_y_v",&shr_tkfit_dedx_y_v);
         t->SetBranchAddress("trk_mcs_muon_mom_v", &trk_mcs_muon_mom_v);
    	t->SetBranchAddress("trk_range_muon_mom_v", &trk_range_muon_mom_v);
- 
+        t->SetBranchAddress("ppfx_cv", &ppfx_cv);
+	t->SetBranchAddress("weightTune", &weightTune);
 
 
+     
 	const Long64_t nentries =t->GetEntries();
 	int tracknumber =0;
 
@@ -620,24 +625,34 @@ void ccpi_analysis_jn(){            //first bracket
 
 	    for(size_t i_mc=0; i_mc<mc_pdg->size();i_mc++){
               
-	      TVector3 temp_mom (mc_px->at(i_mc), mc_py->at(i_mc), mc_pz->at(i_mc));
-	      TVector3 muon_mom;
-              TVector3 pion_mom;	      
+	      //TVector3 temp_mom (mc_px->at(i_mc), mc_py->at(i_mc), mc_pz->at(i_mc));
+	      TVector3 mc_muon_mom;
+              TVector3 mc_pion_mom;	 
+
 	      if(mc_pdg->at(i_mc) == 2212)     nprotons++;
 	      if(abs(mc_pdg->at(i_mc)) == 13)  {
 		      nmuons++;
-		      muon_mom=temp_mom;
-		      mc_muon_momentum=temp_mom.Mag();
+		      mc_muon_mom.SetXYZ(mc_px->at(i_mc), mc_py->at(i_mc), mc_pz->at(i_mc));
+		      mc_muon_momentum=mc_muon_mom.Mag();
+		      std::cout<<"muon=";    mc_muon_mom.Print();
+
 	      }
 	      if(abs(mc_pdg->at(i_mc)) == 211) {
 		      npions++;
-		      pion_mom=temp_mom;
-		      mc_pion_momentum=temp_mom.Mag();
+		      mc_pion_mom.SetXYZ(mc_px->at(i_mc), mc_py->at(i_mc), mc_pz->at(i_mc));
+		      mc_pion_momentum=mc_pion_mom.Mag();
+		      std::cout<<"pion="; mc_pion_mom.Print();
+
 	      }
 
 	      if(mc_pdg->at(i_mc) == 111)      npionszero++;
 	    
-	      if(nmuons==1 && npions==1) mc_opening_angle= muon_mom.Angle(pion_mom);
+	      if(nmuons==1 && npions==1){
+		      mc_opening_angle= mc_pion_mom.Angle(mc_muon_mom);
+		      mc_muon_mom.Print();
+		      mc_pion_mom.Print();
+		      std::cout<<mc_opening_angle<<"\t"<<mc_pion_momentum<<"\t"<<mc_muon_momentum<<std::endl;
+	      	}
 	    }
 
       
@@ -651,7 +666,9 @@ void ccpi_analysis_jn(){            //first bracket
 	    //      bool signal = false;
 
 						
-	    if( (in_fiducial_volume_true) && (nmuons==1) && (npionszero==0) &&  (npions== 1) && (abs(nu_pdg) == 14) ){
+	    if( (in_fiducial_volume_true) && (nmuons==1) && (npionszero==0) &&  (npions== 1) && (abs(nu_pdg) == 14)
+	        && (mc_muon_momentum>0.2) && (mc_pion_momentum>0.2)
+	      ){
 	      signal = true;
 	    }
 
@@ -662,8 +679,8 @@ void ccpi_analysis_jn(){            //first bracket
 
 
 	  //reconstructed staff
-	  //
-	  //
+	  
+	  
 
 
 
@@ -934,6 +951,11 @@ void ccpi_analysis_jn(){            //first bracket
 	  Cuts[8] = Cuts[7] && opening_angle_cut; //muon-pion opening angle cut 
 	  Cuts[9] = Cuts[8] && (nonproton == 2); // no other charged pions
 
+///sanity check for the weights
+
+         
+	  if(!(std::isfinite(weightTune) &&  (weightTune > 0 ) && (weightTune<30)) ) weightTune=1.0;
+	  if(!(std::isfinite(ppfx_cv) &&  (ppfx_cv > 0 ) && (ppfx_cv<30)) )  ppfx_cv=1.0;
 
 
 
@@ -949,9 +971,13 @@ void ccpi_analysis_jn(){            //first bracket
 	    else if(i_f == 6) s = 4;//Data
 	    else continue;
 
+
+	    
 	    if (Cuts[c]){
 
-	      Selected[c][s] += Scale[i_f];
+	      Selected[c][s] += Scale[i_f]*ppfx_cv*weightTune;
+	   //   std::cout<<ppfx_cv<<"\t"<<weightTune<<"\t"<<Selected[c][s]<<std::endl;
+	  //    std::cin.get();
 //	      std::cout<<CutsName[c]<<"\t"<<Sample[s]<<"\t"<<i_f<<"\t"<<  Scale[i_f]<<"\t"<<Selected[c][s]<<std::endl;
 		
 	      Histos[c][s][0]->Fill(topological_score,Scale[i_f]); //Variable[0]="Topological Score"; 
