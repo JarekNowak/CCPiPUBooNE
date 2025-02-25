@@ -116,6 +116,11 @@ void multipion_analysis(){            //first bracket
 			           //,"/data/uboone/beam_on/neutrinoselection_filt_run1_beamon_beamgood.root" // Data -
   };
 
+
+
+
+
+
   std::ofstream output("backtracked_showers.txt");
 
 
@@ -558,7 +563,6 @@ void multipion_analysis(){            //first bracket
 	  bool sel_nu_mu_cc = false;
 	  bool sel_passed_topo_cut = false;
 	  double muon_trk_score = 0.8;
-	  double muon_trk_start_dist =  4.0; //cm
 	  double muon_trk_len = 10.0; //cm
 	  double muon_pid_score = 0.2;
 	  double topo_cut = 0.9;//0.67;
@@ -573,7 +577,7 @@ void multipion_analysis(){            //first bracket
 	  bool plane_hits = false;
 	  bool mol_avg = false;
 	  bool shower_cut = false;
-	  bool Cuts[10] ={false};
+	  bool Cuts[10][10] ={false};
 
 
 
@@ -879,17 +883,19 @@ void multipion_analysis(){            //first bracket
 
 
 
+          int rp = pion_number;// number of reconstructed pions for the selection cuts
 
-	  Cuts[0] = true;// in_fiducial_volume_true;  //all events with entries in true FV
-	  Cuts[1] = Cuts[0] && in_fiducial_volume_reco; // Events in fiducial volume
-	  Cuts[2] = Cuts[1] && sel_passed_topo_cut;// Topological score
-	  Cuts[3] = Cuts[2] && sel_has_muon_candidate;// Muon candidate
-	  Cuts[4] = Cuts[3] && sel_contained_pions; //Contained charged pion
-	  Cuts[5] = Cuts[4] && muon_in_gap;
-	  Cuts[6] = Cuts[5] && pion_in_gap;
-	  Cuts[7] = Cuts[6] && shower_cut; //no or one shower with conditions
-	  Cuts[8] = Cuts[7] && opening_angle_cut; //muon-pion opening angle cut
-	  Cuts[9] = Cuts[8] && (nonproton == 2); // no other charged pions
+
+	  Cuts[0][rp] = true;// in_fiducial_volume_true;  //all events with entries in true FV
+	  Cuts[1][rp] = Cuts[0][rp] && in_fiducial_volume_reco; // Events in fiducial volume
+	  Cuts[2][rp] = Cuts[1][rp] && sel_passed_topo_cut;// Topological score
+	  Cuts[3][rp] = Cuts[2][rp] && sel_has_muon_candidate;// Muon candidate
+	  Cuts[4][rp] = Cuts[3][rp] && sel_contained_pions; //Contained charged pion
+	  Cuts[5][rp] = Cuts[4][rp] && muon_in_gap;
+	  Cuts[6][rp] = Cuts[5][rp] && pion_in_gap;
+	  Cuts[7][rp] = Cuts[6][rp] && shower_cut; //no or one shower with conditions
+	  Cuts[8][rp] = Cuts[7][rp] && opening_angle_cut; //muon-pion opening angle cut
+	  Cuts[9][rp] = Cuts[8][rp] && (nonproton == 2); // no other charged pions
 
 
 
@@ -906,7 +912,7 @@ void multipion_analysis(){            //first bracket
 	    else if(i_f == 6) s = 4;//Data
 	    else continue;
 
-	    if (Cuts[c]){
+	    if (Cuts[c][p]){
 
 	      Selected[c][s][p] += Scale[i_f];
 //	      std::cout<<CutsName[c]<<"\t"<<Sample[s]<<"\t"<<i_f<<"\t"<<  Scale[i_f]<<"\t"<<Selected[c][s]<<std::endl;

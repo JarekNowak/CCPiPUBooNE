@@ -17,6 +17,9 @@ void ccpi_analysis_jn(){            //first bracket
 
   const int ncuts=10;
   double Selected[ncuts][6]={0};
+  
+  int nu_mu=0;
+  int nu_e = 0;
 
   TString CutsName[ncuts];
   CutsName[0]="EventsInTrueFV";
@@ -31,7 +34,8 @@ void ccpi_analysis_jn(){            //first bracket
   CutsName[9]="Nonprotons";
 
 
-  const int nvariables=28;
+  const int nvariables=31;
+
   TString Variable[nvariables];
   Variable[0]="TopologicalScore";
   Variable[1]="MuonTrackLength";
@@ -61,7 +65,9 @@ void ccpi_analysis_jn(){            //first bracket
   Variable[25]="PionMCSMuonMom";
   Variable[26]="MuonTrkMCSMom";
   Variable[27]="MuonMCSMuonMom";
-
+  Variable[28]="MCMuonMomentum";
+  Variable[29]="MCPionMomentum";
+  Variable[30]="MCOpeningAngle";
 
   const int nsamples =6;
   TString Sample[nsamples];
@@ -604,15 +610,34 @@ void ccpi_analysis_jn(){            //first bracket
 	  bool in_fiducial_volume_true = false;  
 
 	  int nprotons=0, npions=0, nmuons=0, npionszero=0, npionsmin=0;
+
+          double mc_muon_momentum = -999.9;
+	  double mc_pion_momentum = -999.9;
+	  double mc_opening_angle = -999.9;
+
 	  if(mc_pdg->size() ) {
 
 
 	    for(size_t i_mc=0; i_mc<mc_pdg->size();i_mc++){
-
+              
+	      TVector3 temp_mom (mc_px->at(i_mc), mc_py->at(i_mc), mc_pz->at(i_mc));
+	      TVector3 muon_mom;
+              TVector3 pion_mom;	      
 	      if(mc_pdg->at(i_mc) == 2212)     nprotons++;
-	      if(abs(mc_pdg->at(i_mc)) == 13)  nmuons++;
-	      if(abs(mc_pdg->at(i_mc)) == 211) npions++;
+	      if(abs(mc_pdg->at(i_mc)) == 13)  {
+		      nmuons++;
+		      muon_mom=temp_mom;
+		      mc_muon_momentum=temp_mom.Mag();
+	      }
+	      if(abs(mc_pdg->at(i_mc)) == 211) {
+		      npions++;
+		      pion_mom=temp_mom;
+		      mc_pion_momentum=temp_mom.Mag();
+	      }
+
 	      if(mc_pdg->at(i_mc) == 111)      npionszero++;
+	    
+	      if(nmuons==1 && npions==1) mc_opening_angle= muon_mom.Angle(pion_mom);
 	    }
 
       
@@ -632,7 +657,8 @@ void ccpi_analysis_jn(){            //first bracket
 
 	  }
 
-
+        if (abs(nu_pdg)==14) nu_mu++;
+	if (abs(nu_pdg)==12) nu_e++;
 
 
 	  //reconstructed staff
@@ -1054,7 +1080,9 @@ void ccpi_analysis_jn(){            //first bracket
 	      Histos[c][s][18]->Fill(nPrimaryShowers,Scale[i_f]); // Variable[18]="NPrimaryShowers";
 	      Histos[c][s][19]->Fill(nPrimaryTracks,Scale[i_f]); // Variable[19]="NPrimaryTracks";
 	
-
+  	      Histos[c][s][28]->Fill(mc_muon_momentum,Scale[i_f]);
+	      Histos[c][s][29]->Fill(mc_pion_momentum,Scale[i_f]);
+              Histos[c][s][30]->Fill(mc_opening_angle,Scale[i_f]);
 
 
 
@@ -1095,10 +1123,10 @@ void ccpi_analysis_jn(){            //first bracket
 	double purity = Selected[c][0]/double(Selected[c][0]+Selected[c][1] + Selected[c][2] +Selected[c][3] )*100 ;
 	double efficiency = Selected[c][0]/double(Selected[0][0])*100;
 
-	std::cout<<CutsName[c]<<"\t \t \t "<<Selected[c][0]<<"("<<Selected[c][0]<<")"
-		 <<"\t \t "<<Selected[c][1]<<"("<<Selected[c][1]<<")"
-		 <<"\t \t "<<Selected[c][2]<<"("<<Selected[c][2]<<")"
-		 <<"\t \t "<<Selected[c][3]<<"("<<Selected[c][3]<<")"
+	std::cout<<CutsName[c]<<"\t \t \t "<<Selected[c][0]
+		 <<"\t \t "<<Selected[c][1]
+		 <<"\t \t "<<Selected[c][2]
+		 <<"\t \t "<<Selected[c][3]
 		 <<"\t \t "<<Selected[c][4]
 		 <<"\t\t\t"<<efficiency
 		 <<"\t \t "<<purity
@@ -1139,5 +1167,8 @@ void ccpi_analysis_jn(){            //first bracket
 
 
 
-    }//TEST END
+    }//TEST ENDi
+ 
+  std::cout<<"nu_mu="<<nu_mu<<std::endl;
+  std::cout<<"nu_e ="<<nu_e <<std::endl;
 }
