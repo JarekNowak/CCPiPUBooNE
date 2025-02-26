@@ -86,7 +86,9 @@ void ccpi_analysis_jn(){            //first bracket
 	
  
 	if(v<28) Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",100,-1,-1);
-	else Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",100,0,2);
+	else if(v<30)  Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",100,0,2);
+	else Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",180,0, 180);
+	
 	if(s!=4) Histos[c][s][v] ->SetLineColor(s+1);
 	Histos[c][s][v] ->GetXaxis()->SetTitle(Variable[v]);
 	Histos[c][s][v] ->SetTitle(CutsName[c]);
@@ -621,39 +623,43 @@ void ccpi_analysis_jn(){            //first bracket
 	  double mc_opening_angle = -999.9;
 
 	  if(mc_pdg->size() ) {
+	 
+		  TVector3 mc_muon_mom;
+              	  TVector3 mc_pion_mom;
 
 
 	    for(size_t i_mc=0; i_mc<mc_pdg->size();i_mc++){
               
-	      //TVector3 temp_mom (mc_px->at(i_mc), mc_py->at(i_mc), mc_pz->at(i_mc));
-	      TVector3 mc_muon_mom;
-              TVector3 mc_pion_mom;	 
 
 	      if(mc_pdg->at(i_mc) == 2212)     nprotons++;
 	      if(abs(mc_pdg->at(i_mc)) == 13)  {
 		      nmuons++;
 		      mc_muon_mom.SetXYZ(mc_px->at(i_mc), mc_py->at(i_mc), mc_pz->at(i_mc));
 		      mc_muon_momentum=mc_muon_mom.Mag();
-		      std::cout<<"muon=";    mc_muon_mom.Print();
+	//	      std::cout<<"muon1=";    mc_muon_mom.Print();
 
 	      }
 	      if(abs(mc_pdg->at(i_mc)) == 211) {
 		      npions++;
 		      mc_pion_mom.SetXYZ(mc_px->at(i_mc), mc_py->at(i_mc), mc_pz->at(i_mc));
 		      mc_pion_momentum=mc_pion_mom.Mag();
-		      std::cout<<"pion="; mc_pion_mom.Print();
+	//	      std::cout<<"pion="; mc_pion_mom.Print();
 
 	      }
 
 	      if(mc_pdg->at(i_mc) == 111)      npionszero++;
-	    
-	      if(nmuons==1 && npions==1){
-		      mc_opening_angle= mc_pion_mom.Angle(mc_muon_mom);
-		      mc_muon_mom.Print();
-		      mc_pion_mom.Print();
-		      std::cout<<mc_opening_angle<<"\t"<<mc_pion_momentum<<"\t"<<mc_muon_momentum<<std::endl;
-	      	}
+	       
 	    }
+
+
+	       if(nmuons==1 && npions==1){
+                      mc_opening_angle= mc_pion_mom.Angle(mc_muon_mom)*180.0/3.142;
+                     // mc_muon_mom.Print();
+                     // mc_pion_mom.Print();
+
+                     // std::cout<<mc_opening_angle<<"\t"<<mc_pion_momentum<<"\t"<<mc_muon_momentum<<std::endl;
+                }
+
 
       
 	    TVector3 Reco_Vertex(reco_nu_vtx_sce_x,reco_nu_vtx_sce_y,reco_nu_vtx_sce_z);
@@ -667,7 +673,7 @@ void ccpi_analysis_jn(){            //first bracket
 
 						
 	    if( (in_fiducial_volume_true) && (nmuons==1) && (npionszero==0) &&  (npions== 1) && (abs(nu_pdg) == 14)
-	        && (mc_muon_momentum>0.2) && (mc_pion_momentum>0.2)
+	       // && (mc_muon_momentum>0.2) && (mc_pion_momentum>0.2)
 	      ){
 	      signal = true;
 	    }
@@ -834,6 +840,7 @@ void ccpi_analysis_jn(){            //first bracket
 	       && (trk_bragg_mu_v->at(i_b) > 0) && (trk_bragg_mu_v->at(i_b) < 500)
 	       && (trk_bragg_mip_v->at(i_b)> 0) && (trk_bragg_mip_v->at(i_b)< 500)
 	       && (trk_len_v->at(i_b) < 1e6) && (trk_len_v->at(i_b) > 0)
+	       && (i_b != muon_index) //skipp index already assigned to a muon
 	       ){
 
 
@@ -841,7 +848,9 @@ void ccpi_analysis_jn(){            //first bracket
 	      TVector3 track_start_ib (trk_sce_start_x_v->at(i_b),trk_sce_start_y_v->at(i_b),trk_sce_start_z_v->at(i_b));
 	      TVector3 nu_to_track_dist_ib (track_start_ib - reco_primary_vtx);
 
+            TVector3 pion_endpoint(trk_sce_end_x_v->at(i_b),trk_sce_end_y_v->at(i_b),trk_sce_end_z_v->at(i_b));
 
+            if ( !(isContained(pion_endpoint)) ) continue;
 
 
 	      float tmvaOutput = 0.0;
@@ -872,8 +881,11 @@ void ccpi_analysis_jn(){            //first bracket
 	
 
 
-	      if ( (trk_llr_pid_score_v->at(i_b) > 0.1) && (nu_to_track_dist_ib.Mag() < 9.0)
-		   && (i_b != muon_index)&& (tmvaOutput >= -0.1) && (tmvaOutput_pi >= -0.1)){
+	      if (    (trk_llr_pid_score_v->at(i_b) > 0.1) 
+		   && (nu_to_track_dist_ib.Mag() < 9.0)
+		   && (tmvaOutput > -0.1) 
+		   && (tmvaOutput_pi > -0.1) 
+		   ){
 
 
 		pion_number++;
@@ -895,7 +907,7 @@ void ccpi_analysis_jn(){            //first bracket
 	    pion_in_gap = ((pfnplanehits_U->at(pion_index)>0) && (pfnplanehits_V->at(pion_index)>0)&& (pfnplanehits_Y->at(pion_index)>0));
 	    TVector3 pion_endpoint(trk_sce_end_x_v->at(pion_index),trk_sce_end_y_v->at(pion_index),trk_sce_end_z_v->at(pion_index));
 
-	    if ((isContained(pion_endpoint)) )      	sel_contained_pions = true;
+	    if ((isContained(pion_endpoint)) )	  sel_contained_pions = true;
    
 	  }
 
@@ -924,7 +936,7 @@ void ccpi_analysis_jn(){            //first bracket
 	      
 	    // std::cout<<nPrimaryShowers<<"\t"<<shower_index<<"\t"<<nu_to_shower_dist.Mag()<<std::endl;
 	
-	    if((pfnplanehits_Y->at(shower_index)<50) && (pfnplanehits_Y->at(shower_index)>test) && (nu_to_shower_dist.Mag()>10)){
+	    if((pfnplanehits_Y->at(shower_index)<50) && (pfnplanehits_Y->at(shower_index)>0) && (nu_to_shower_dist.Mag()>10)){
 
 	      shower_cut = true ;
 	    }
@@ -1190,6 +1202,21 @@ void ccpi_analysis_jn(){            //first bracket
       }
 
 
+
+	 for(int i = 28; i<nvariables; i++){
+            for(int c=1;c<ncuts;c++){
+        
+        
+          c1->cd(c+1);
+          
+
+          Histos[c][0][i]->Divide(Histos[0][0][i]);
+          Histos[c][0][i]->Draw();
+
+
+        }
+        c1->Print("plots/Eff"+Variable[i]+".png");
+      }
 
 
 
