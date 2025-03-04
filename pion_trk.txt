@@ -1,0 +1,215 @@
+   ------------------------------------------------------------------
+  | Welcome to ROOT 6.34.04                        https://root.cern |
+  | (c) 1995-2024, The ROOT Team; conception: R. Brun, F. Rademakers |
+  | Built for linuxx8664gcc on Feb 14 2025, 00:00:00                 |
+  | From tags/6-34-04@6-34-04                                        |
+  | With g++ (GCC) 11.5.0 20240719 (Red Hat 11.5.0-5)                |
+  | Try '.help'/'.?', '.demo', '.license', '.credits', '.quit'/'.q'  |
+   ------------------------------------------------------------------
+
+
+Processing ccpi_analysis_jn.C...
+Processing file: /data/uboone/new_numi_flux/Run1_fhc_new_numi_flux_fhc_pandora_ntuple.root
+                         : Booking "BDT" of type "BDT" from booster_decision_tree/dataset_MIP_BDT_no_len/weights/TMVAClassification_BDT.weights.xml.
+                         : Reading weight file: booster_decision_tree/dataset_MIP_BDT_no_len/weights/TMVAClassification_BDT.weights.xml
+<HEADER> DataSetInfo              : [Default] : Added class "Signal"
+<HEADER> DataSetInfo              : [Default] : Added class "Background"
+                         : Booked classifier "BDT" of type: "BDT"
+                         : Booking "BDT" of type "BDT" from booster_decision_tree/dataset_muon_BDT/weights/TMVAClassification_BDT.weights.xml.
+                         : Reading weight file: booster_decision_tree/dataset_muon_BDT/weights/TMVAClassification_BDT.weights.xml
+<HEADER> DataSetInfo              : [Default] : Added class "Signal"
+<HEADER> DataSetInfo              : [Default] : Added class "Background"
+                         : Booked classifier "BDT" of type: "BDT"
+                         : Booking "BDT" of type "BDT" from booster_decision_tree/dataset_pion_BDT_no_len/weights/TMVAClassification_BDT.weights.xml.
+                         : Reading weight file: booster_decision_tree/dataset_pion_BDT_no_len/weights/TMVAClassification_BDT.weights.xml
+<HEADER> DataSetInfo              : [Default] : Added class "Signal"
+<HEADER> DataSetInfo              : [Default] : Added class "Background"
+                         : Booked classifier "BDT" of type: "BDT"
+Number of Events=705700
+0
+                         : Rebuilding Dataset Default
+                         : Rebuilding Dataset Default
+100000
+200000
+300000
+400000
+500000
+600000
+700000
+Processing file: /data/uboone/new_numi_flux/Run2_fhc_new_numi_flux_fhc_pandora_ntuple.root
+                         : Booking "BDT" of type "BDT" from booster_decision_tree/dataset_MIP_BDT_no_len/weights/TMVAClassification_BDT.weights.xml.
+                         : Reading weight file: booster_decision_tree/dataset_MIP_BDT_no_len/weights/TMVAClassification_BDT.weights.xml
+<HEADER> DataSetInfo              : [Default] : Added class "Signal"
+<HEADER> DataSetInfo              : [Default] : Added class "Background"
+                         : Booked classifier "BDT" of type: "BDT"
+                         : Booking "BDT" of type "BDT" from booster_decision_tree/dataset_muon_BDT/weights/TMVAClassification_BDT.weights.xml.
+                         : Reading weight file: booster_decision_tree/dataset_muon_BDT/weights/TMVAClassification_BDT.weights.xml
+<HEADER> DataSetInfo              : [Default] : Added class "Signal"
+<HEADER> DataSetInfo              : [Default] : Added class "Background"
+                         : Booked classifier "BDT" of type: "BDT"
+                         : Booking "BDT" of type "BDT" from booster_decision_tree/dataset_pion_BDT_no_len/weights/TMVAClassification_BDT.weights.xml.
+                         : Reading weight file: booster_decision_tree/dataset_pion_BDT_no_len/weights/TMVAClassification_BDT.weights.xml
+<HEADER> DataSetInfo              : [Default] : Added class "Signal"
+<HEADER> DataSetInfo              : [Default] : Added class "Background"
+                         : Booked classifier "BDT" of type: "BDT"
+Number of Events=756281
+0
+                         : Rebuilding Dataset Default
+                         : Rebuilding Dataset Default
+100000
+200000
+300000
+400000
+500000
+600000
+700000
+Processing file: /data/uboone/new_numi_flux/Run4_fhc_new_numi_flux_fhc_pandora_ntuple.root
+                         : Booking "BDT" of type "BDT" from booster_decision_tree/dataset_MIP_BDT_no_len/weights/TMVAClassification_BDT.weights.xml.
+                         : Reading weight file: booster_decision_tree/dataset_MIP_BDT_no_len/weights/TMVAClassification_BDT.weights.xml
+<HEADER> DataSetInfo              : [Default] : Added class "Signal"
+<HEADER> DataSetInfo              : [Default] : Added class "Background"
+                         : Booked classifier "BDT" of type: "BDT"
+                         : Booking "BDT" of type "BDT" from booster_decision_tree/dataset_muon_BDT/weights/TMVAClassification_BDT.weights.xml.
+                         : Reading weight file: booster_decision_tree/dataset_muon_BDT/weights/TMVAClassification_BDT.weights.xml
+<HEADER> DataSetInfo              : [Default] : Added class "Signal"
+<HEADER> DataSetInfo              : [Default] : Added class "Background"
+                         : Booked classifier "BDT" of type: "BDT"
+                         : Booking "BDT" of type "BDT" from booster_decision_tree/dataset_pion_BDT_no_len/weights/TMVAClassification_BDT.weights.xml.
+                         : Reading weight file: booster_decision_tree/dataset_pion_BDT_no_len/weights/TMVAClassification_BDT.weights.xml
+<HEADER> DataSetInfo              : [Default] : Added class "Signal"
+<HEADER> DataSetInfo              : [Default] : Added class "Background"
+                         : Booked classifier "BDT" of type: "BDT"
+Number of Events=859368
+0
+                         : Rebuilding Dataset Default
+                         : Rebuilding Dataset Default
+100000
+200000
+300000
+400000
+500000
+600000
+700000
+800000
+Processing file: /data/uboone/new_numi_flux/Run5_fhc_new_numi_flux_fhc_pandora_ntuple.root
+                         : Booking "BDT" of type "BDT" from booster_decision_tree/dataset_MIP_BDT_no_len/weights/TMVAClassification_BDT.weights.xml.
+                         : Reading weight file: booster_decision_tree/dataset_MIP_BDT_no_len/weights/TMVAClassification_BDT.weights.xml
+<HEADER> DataSetInfo              : [Default] : Added class "Signal"
+<HEADER> DataSetInfo              : [Default] : Added class "Background"
+                         : Booked classifier "BDT" of type: "BDT"
+                         : Booking "BDT" of type "BDT" from booster_decision_tree/dataset_muon_BDT/weights/TMVAClassification_BDT.weights.xml.
+                         : Reading weight file: booster_decision_tree/dataset_muon_BDT/weights/TMVAClassification_BDT.weights.xml
+<HEADER> DataSetInfo              : [Default] : Added class "Signal"
+<HEADER> DataSetInfo              : [Default] : Added class "Background"
+                         : Booked classifier "BDT" of type: "BDT"
+                         : Booking "BDT" of type "BDT" from booster_decision_tree/dataset_pion_BDT_no_len/weights/TMVAClassification_BDT.weights.xml.
+                         : Reading weight file: booster_decision_tree/dataset_pion_BDT_no_len/weights/TMVAClassification_BDT.weights.xml
+<HEADER> DataSetInfo              : [Default] : Added class "Signal"
+<HEADER> DataSetInfo              : [Default] : Added class "Background"
+                         : Booked classifier "BDT" of type: "BDT"
+Number of Events=270930
+0
+                         : Rebuilding Dataset Default
+                         : Rebuilding Dataset Default
+100000
+200000
+Processing file: /data/uboone/EXT/beamoff_run1Andrun3.root
+                         : Booking "BDT" of type "BDT" from booster_decision_tree/dataset_MIP_BDT_no_len/weights/TMVAClassification_BDT.weights.xml.
+                         : Reading weight file: booster_decision_tree/dataset_MIP_BDT_no_len/weights/TMVAClassification_BDT.weights.xml
+<HEADER> DataSetInfo              : [Default] : Added class "Signal"
+<HEADER> DataSetInfo              : [Default] : Added class "Background"
+                         : Booked classifier "BDT" of type: "BDT"
+                         : Booking "BDT" of type "BDT" from booster_decision_tree/dataset_muon_BDT/weights/TMVAClassification_BDT.weights.xml.
+                         : Reading weight file: booster_decision_tree/dataset_muon_BDT/weights/TMVAClassification_BDT.weights.xml
+<HEADER> DataSetInfo              : [Default] : Added class "Signal"
+<HEADER> DataSetInfo              : [Default] : Added class "Background"
+                         : Booked classifier "BDT" of type: "BDT"
+                         : Booking "BDT" of type "BDT" from booster_decision_tree/dataset_pion_BDT_no_len/weights/TMVAClassification_BDT.weights.xml.
+                         : Reading weight file: booster_decision_tree/dataset_pion_BDT_no_len/weights/TMVAClassification_BDT.weights.xml
+<HEADER> DataSetInfo              : [Default] : Added class "Signal"
+<HEADER> DataSetInfo              : [Default] : Added class "Background"
+                         : Booked classifier "BDT" of type: "BDT"
+Number of Events=4115459
+0
+                         : Rebuilding Dataset Default
+                         : Rebuilding Dataset Default
+100000
+200000
+300000
+400000
+500000
+600000
+700000
+800000
+900000
+1000000
+1100000
+1200000
+1300000
+1400000
+1500000
+1600000
+1700000
+1800000
+1900000
+2000000
+2100000
+2200000
+2300000
+2400000
+2500000
+2600000
+2700000
+2800000
+2900000
+3000000
+3100000
+3200000
+3300000
+3400000
+3500000
+3600000
+3700000
+3800000
+3900000
+4000000
+4100000
+Processing file: /data/uboone/dirt/prodgenie_numi_uboone_overlay_dirt_fhc_mcc9_run1_v28_all_snapshot.root
+                         : Booking "BDT" of type "BDT" from booster_decision_tree/dataset_MIP_BDT_no_len/weights/TMVAClassification_BDT.weights.xml.
+                         : Reading weight file: booster_decision_tree/dataset_MIP_BDT_no_len/weights/TMVAClassification_BDT.weights.xml
+<HEADER> DataSetInfo              : [Default] : Added class "Signal"
+<HEADER> DataSetInfo              : [Default] : Added class "Background"
+                         : Booked classifier "BDT" of type: "BDT"
+                         : Booking "BDT" of type "BDT" from booster_decision_tree/dataset_muon_BDT/weights/TMVAClassification_BDT.weights.xml.
+                         : Reading weight file: booster_decision_tree/dataset_muon_BDT/weights/TMVAClassification_BDT.weights.xml
+<HEADER> DataSetInfo              : [Default] : Added class "Signal"
+<HEADER> DataSetInfo              : [Default] : Added class "Background"
+                         : Booked classifier "BDT" of type: "BDT"
+                         : Booking "BDT" of type "BDT" from booster_decision_tree/dataset_pion_BDT_no_len/weights/TMVAClassification_BDT.weights.xml.
+                         : Reading weight file: booster_decision_tree/dataset_pion_BDT_no_len/weights/TMVAClassification_BDT.weights.xml
+<HEADER> DataSetInfo              : [Default] : Added class "Signal"
+<HEADER> DataSetInfo              : [Default] : Added class "Background"
+                         : Booked classifier "BDT" of type: "BDT"
+Number of Events=569506
+0
+                         : Rebuilding Dataset Default
+                         : Rebuilding Dataset Default
+100000
+200000
+300000
+400000
+500000
+test=0	 	 	 signal	 	 bckg 	  	 EXT 	   	 Dirt 	  	 DATA 	 	 efficiency 	 purity 	 eff*pur
+EventsInTrueFV	 	 5452.76	 277149	 	 8.41052e+06 	 368640	 	 0		100	 	 0.0601733	6.01733
+FlashMatching	 	 4758.58	 116372	 	 967805	 	 92244	 	 0		87.2692	 	 0.402866	35.1578
+InFiducialVol	 	 4448.83	 48337.1 	 271252	 	 13558.8	 0		81.5886	 	 1.31779	107.517
+Topological	 	 2460.71	 13690.6 	 2143.78 	 281.864	 0		45.1279	 	 13.2461	597.767
+MuonCandidate	 	 2307.44	 10176.9 	 1185.31 	 201.37	 	 0		42.317	 	 16.635		703.942
+ContainedPion	 	 878.38	 	 1197.83 	 75.6147 	 38.1582	 0		16.1089	 	 40.109		646.113
+MuonIn3Planes	 	 853.548	 1148.16 	 65.3965 	 33.2123	 0		15.6535	 	 40.639		636.144
+PionIn3Planes	 	 791.401	 1037.07 	 40.8728 	 11.0017	 0		14.5138	 	 42.0881	610.857
+ShowerCut	 	 660.302	 488.49	 	 28.611	 	 8.00114	 0		12.1095	 	 55.7027	674.532
+OpeningAngle	 	 652.272	 468.992 	 8.17456 	 4.47789	 0		11.9623	 	 57.5239	688.115
+Nonprotons	 	 639.123	 416.62	 	 6.13092 	 2.63814	 0		11.7211	 	 60.0391	703.724
+nu_mu=2761732
+nu_e =400053
