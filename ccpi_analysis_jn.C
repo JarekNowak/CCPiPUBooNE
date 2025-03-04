@@ -35,7 +35,7 @@ void ccpi_analysis_jn(){            //first bracket
   CutsName[10]="Nonprotons";
 
 
-  const int nvariables=33;
+  const int nvariables=49;
 
   TString Variable[nvariables];
   Variable[0]="TopologicalScore";
@@ -71,6 +71,26 @@ void ccpi_analysis_jn(){            //first bracket
   Variable[30]="MCOpeningAngle";
   Variable[31]="Nu_muMC_Eenergy";
   Variable[32]="Nu_eMC_Energy";
+  Variable[33]="MuToPiDistance";
+  Variable[34]="MuonTheta";
+  Variable[35]="MuonCosTheta";
+  Variable[36]="MuonPhi";
+  Variable[37]="PionTheta";
+  Variable[38]="PionCosTheta";
+  Variable[39]="PionPhi";
+  Variable[40]="ShowerTheta";
+  Variable[41]="ShowerCosTheta";
+  Variable[42]="ShowerPhi";
+  Variable[43]="MuonStartX";
+  Variable[44]="MuonStartY";
+  Variable[45]="MuonStartZ";
+  Variable[46]="PionStartX";
+  Variable[47]="PionStartY";
+  Variable[48]="PionStartZ";
+
+
+
+
 
   const int nsamples =6;
   TString Sample[nsamples];
@@ -88,7 +108,7 @@ void ccpi_analysis_jn(){            //first bracket
       for(int s=0;s<nsamples;s++){
 	
  
-	if(v<28) Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",100,-1,-1);
+	if(v<28 || v>32) Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",100,-1,-1);
 	else if(v<30)  Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",20,0,0.5);
 	else if(v==30) Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",180,0, 180);
 	else if(v==31 || v==32)  Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",100,-1,-1);
@@ -110,7 +130,7 @@ void ccpi_analysis_jn(){            //first bracket
     ,"/data/uboone/new_numi_flux/Run2_fhc_new_numi_flux_fhc_pandora_ntuple.root"
     ,"/data/uboone/new_numi_flux/Run4_fhc_new_numi_flux_fhc_pandora_ntuple.root"
     ,"/data/uboone/new_numi_flux/Run5_fhc_new_numi_flux_fhc_pandora_ntuple.root"
-    ,"/data/uboone/EXT/neutrinoselection_filt_run1_beamoff.root" // EXT beam off
+    ,"/data/uboone/EXT/beamoff_run1Andrun3.root" //neutrinoselection_filt_run1_beamoff.root" // EXT beam off
     ,"/data/uboone/dirt/prodgenie_numi_uboone_overlay_dirt_fhc_mcc9_run1_v28_all_snapshot.root" // Dirt - the old numi flux
     //,"/data/uboone/beam_on/neutrinoselection_filt_run1_beamon_beamgood.root" // Data - 
   };
@@ -158,7 +178,7 @@ void ccpi_analysis_jn(){            //first bracket
 
      
   Scale[5] = totalDataPoT/16.739;      // Run1 dirt from David 1.67392e+21
-  Scale[4]  = 5748692.0/9199232.0;  // Run1 beam off triggers scaling to beam on triggers
+  Scale[4]  = 7809962/(610496.0+3211097.0);// 5748692.0/9199232.0;  // Run1+Run3 beam off triggers scaling to beam on triggers
 
 
   double test_min=0.0;
@@ -574,9 +594,11 @@ void ccpi_analysis_jn(){            //first bracket
 
 
      
-	const Long64_t nentries =t->GetEntries();
+	Long64_t nentries =t->GetEntries();
+
 	int tracknumber =0;
 
+//	if(i_f<4) nentries =1000;
 
 	std::cout<<"Number of Events="<<nentries<<std::endl;
 	for(int ientry=0;ientry<nentries;ientry++){
@@ -596,8 +618,8 @@ void ccpi_analysis_jn(){            //first bracket
 	  double muon_trk_start_dist =  4.0; //cm
 	  double muon_trk_len = 10; //cm
 	  double muon_pid_score = 0.2;
-	  double topo_cut = 0.9;//0.67;
-          double pion_trk_len = 10; //cm
+	  double topo_cut = 0.94;//0.67;
+          double pion_trk_len = 20; //cm
 
 	  bool pion_in_gap = false;
 	  bool muon_in_gap = false;
@@ -897,7 +919,7 @@ void ccpi_analysis_jn(){            //first bracket
 
 	      if (    (trk_llr_pid_score_v->at(i_b) > 0.1) 
 		   && (nu_to_track_dist_ib.Mag() < 4.0)
-		   && (tmvaOutput > -0.1) 
+		   && (tmvaOutput    > -0.1) 
 		   && (tmvaOutput_pi > -0.1)
 		   && (trk_len_v->at(i_b) > pion_trk_len) 
 		   ){
@@ -988,14 +1010,13 @@ void ccpi_analysis_jn(){            //first bracket
 
 
 
-bool show = 1 ; //change to 0 to suppress the text and 1 to show it
+bool show = 0 ; //change to 0 to suppress the text and 1 to show it
 
 if(Cuts[10]==true && show){
 
 	if(signal)  std::cout<<"Signal event: "<<ientry<< std::endl;
         if(!signal) std::cout<<"Background event: "<<ientry<<std::endl;
         std::cout<<"MC Info"<<std::endl;
-
 	for(size_t i_mc=0; i_mc<mc_pdg->size();i_mc++){
 		TVector3 mc_mom(mc_px->at(i_mc), mc_py->at(i_mc), mc_pz->at(i_mc));
               std::cout<<i_mc<<"\t"<< mc_pdg->at(i_mc)<<"\t"<< mc_E->at(i_mc)<<"\t"<< mc_mom.Mag()<<std::endl;
@@ -1007,7 +1028,7 @@ if(Cuts[10]==true && show){
 		 if(pfp_generation_v->at(i_b)!=2) continue;
 
 
-		               float tmvaOutput = 0.0;
+              float tmvaOutput = 0.0;
               float tmvaOutput_pi = 0.0;
 
               trk_bragg_p_v_tmva = trk_bragg_p_v->at(i_b);
@@ -1043,12 +1064,12 @@ if(Cuts[10]==true && show){
 			 <<"\t \t"<<pfp_generation_v->at(i_b)
 			 <<"\t \t"<<trk_score_v->at(i_b)
 			 <<"\t \t"<<trk_len_v->at(i_b)
-   	           	 <<"\t \t"<<trk_llr_pid_score_v->at(i_b)
+   	          	 <<"\t \t"<<trk_llr_pid_score_v->at(i_b)
 			 <<"\t \t"<<tmvaOutput
                          <<"\t \t"<<tmvaOutput_pi
 			 <<"\t \t"<<trk_bragg_p_v->at(i_b) 
-  	  		 <<"\t \t"<<distance
-		 	 <<"\t \t"<<backtracked_pdg->at(i_b);
+  	  		 <<"\t \t"<<distance;
+//		 	 <<"\t \t"<<backtracked_pdg->at(i_b);
                  if(i_b==muon_index) std::cout<<"\t muon"<<std::endl;
 		 else if(i_b==pion_index)  std::cout<<"\t pion"<<std::endl;
 		 else if(i_b==shower_index) std::cout<<"\t shower"<<std::endl;
@@ -1130,6 +1151,17 @@ if(Cuts[10]==true && show){
 */
 		//trk_mcs_muon_mom_v;
         	//trk_range_muon_mom_v;
+		//
+	        TVector3 dir(trk_dir_x_v->at(muon_index),trk_dir_y_v->at(muon_index),trk_dir_z_v->at(muon_index));
+                Histos[c][s][34]->Fill(dir.Theta(),Scale[i_f]);
+                Histos[c][s][35]->Fill(dir.CosTheta(),Scale[i_f]);
+                Histos[c][s][36]->Fill(dir.Phi(),Scale[i_f]);
+
+
+		Histos[c][s][43]->Fill(trk_sce_start_x_v->at(muon_index), Scale[i_f]);
+                Histos[c][s][44]->Fill(trk_sce_start_y_v->at(muon_index), Scale[i_f]);
+                Histos[c][s][45]->Fill(trk_sce_start_z_v->at(muon_index), Scale[i_f]);
+
 
 	      }
 
@@ -1174,7 +1206,19 @@ if(Cuts[10]==true && show){
 		Histos[c][s][22]->Fill(tmvaOutput_pi,Scale[i_f] );  //Variable[22]="PionTMVAPi";
   	        Histos[c][s][24]->Fill(trk_range_muon_mom_v->at(pion_index), Scale[i_f]);
                 Histos[c][s][25]->Fill(trk_mcs_muon_mom_v->at(pion_index), Scale[i_f]);
- 
+
+                TVector3 dir(trk_dir_x_v->at(pion_index),trk_dir_y_v->at(pion_index),trk_dir_z_v->at(pion_index));
+                Histos[c][s][37]->Fill(dir.Theta(),Scale[i_f]);
+		Histos[c][s][38]->Fill(dir.CosTheta(),Scale[i_f]);
+                Histos[c][s][39]->Fill(dir.Phi(),Scale[i_f]);
+
+
+                Histos[c][s][46]->Fill(trk_sce_start_x_v->at(pion_index), Scale[i_f]);
+                Histos[c][s][47]->Fill(trk_sce_start_y_v->at(pion_index), Scale[i_f]);
+                Histos[c][s][48]->Fill(trk_sce_start_z_v->at(pion_index), Scale[i_f]);
+
+
+
 	      }
 	      if((muon_index!= -1) && (pion_index!= -1)) {
 		TVector3 muon_start (trk_sce_start_x_v->at(muon_index),trk_sce_start_y_v->at(muon_index),trk_sce_start_z_v->at(muon_index));
@@ -1188,11 +1232,9 @@ if(Cuts[10]==true && show){
 
 
 
-
-
-
-
-
+	        TVector3 muon_track_start(trk_sce_start_x_v->at(muon_index),trk_sce_start_y_v->at(muon_index),trk_sce_start_z_v->at(muon_index));
+    		TVector3 pion_track_start(trk_sce_start_x_v->at(pion_index),trk_sce_start_y_v->at(pion_index),trk_sce_start_z_v->at(pion_index));
+		Histos[c][s][33]->Fill((muon_track_start-pion_track_start).Mag(),Scale[i_f]);
 
 
 
@@ -1210,6 +1252,12 @@ if(Cuts[10]==true && show){
 		Histos[c][s][17]->Fill(pfnplanehits_V->at(shower_index),Scale[i_f]);  //Variable[17]="ShowerVPlaneHits";
 
 		Histos[c][s][20]->Fill(nu_to_shower_dist.Mag(),Scale[i_f]);// Variable[20]="ShowerVtxDistance";
+
+		TVector3 dir(trk_dir_x_v->at(shower_index),trk_dir_y_v->at(shower_index),trk_dir_z_v->at(shower_index));
+                Histos[c][s][40]->Fill(dir.Theta(),Scale[i_f]);
+                Histos[c][s][41]->Fill(dir.CosTheta(),Scale[i_f]);
+                Histos[c][s][42]->Fill(dir.Phi(),Scale[i_f]);
+
 
 	      }
 
