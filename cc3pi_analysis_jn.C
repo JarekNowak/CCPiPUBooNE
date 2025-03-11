@@ -1,0 +1,1560 @@
+#include "TFile.h"
+#include "FV.h"
+#include "TVector2.h"
+#include "TVector3.h"
+#include <iostream>
+#include "TLine.h"
+#include "TTree.h"
+#include <TCanvas.h>
+#include <TMVA/Reader.h>
+#include <TH1.h>
+#include <TH2.h>
+#include <TH3.h>
+
+
+
+void cc3pi_analysis_jn(){            //first bracket
+
+  const int ncuts=11;
+  double Selected[ncuts][6]={0};
+  
+  int nu_mu=0;
+  int nu_e = 0;
+
+  TString CutsName[ncuts];
+  CutsName[0]="EventsInTrueFV";
+  CutsName[1]="NeutrinoSlice";
+  CutsName[2]="InFiducialVol";
+  CutsName[3]="Topological";
+  CutsName[4]="MuonCandidate";
+  CutsName[5]="ContainedPion";
+  CutsName[6]="MuonIn3Planes";
+  CutsName[7]="PionIn3Planes";
+  CutsName[8]="ShowerCut";
+  CutsName[9]="MuPiDistance";
+  CutsName[10]="Nonprotons";
+
+
+  const int nvariables=83;
+
+  TString Variable[nvariables];
+  Variable[0]="TopologicalScore";
+  Variable[1]="MuonTrackLength";
+  Variable[2]="PionTrackLength";
+  Variable[3]="MuPiOpeningangle";
+  Variable[4]="MuonPID";
+  Variable[5]="PionPID";
+  Variable[6]="MuonVtxDistance";
+  Variable[7]="PionVtxDistance";
+  Variable[8]="MuonPionDistance";
+  Variable[9]="MuonUPlaneHits";
+  Variable[10]="MuonYPlaneHits";
+  Variable[11]="MuonVPlaneHits";
+  Variable[12]="PionUPlaneHits";
+  Variable[13]="PionYPlaneHits";
+  Variable[14]="PionVPlaneHits";
+  Variable[15]="ShowerUPlaneHits";
+  Variable[16]="ShowerYPlaneHits";
+  Variable[17]="ShowerVPlaneHits";
+  Variable[18]="NPrimaryShowers";
+  Variable[19]="NPrimaryTracks";
+  Variable[20]="ShowerVtxDistance";
+  Variable[21]="PionTMVAMip";
+  Variable[22]="PionTMVAPi";
+  Variable[23]="MuonTMVAMip";
+  Variable[24]="PionTrkMuonMom";
+  Variable[25]="PionMCSMuonMom";
+  Variable[26]="MuonTrkMCSMom";
+  Variable[27]="MuonMCSMuonMom";
+  Variable[28]="MCMuonMomentum";
+  Variable[29]="MCPionMomentum";
+  Variable[30]="MCOpeningAngle";
+  Variable[31]="Nu_muMC_Eenergy";
+  Variable[32]="Nu_eMC_Energy";
+  Variable[33]="MuToPiDistance";
+  Variable[34]="MuonTheta";
+  Variable[35]="MuonCosTheta";
+  Variable[36]="MuonPhi";
+  Variable[37]="PionTheta";
+  Variable[38]="PionCosTheta";
+  Variable[39]="PionPhi";
+  Variable[40]="ShowerTheta";
+  Variable[41]="ShowerCosTheta";
+  Variable[42]="ShowerPhi";
+  Variable[43]="MuonStartX";
+  Variable[44]="MuonStartY";
+  Variable[45]="MuonStartZ";
+  Variable[46]="PionStartX";
+  Variable[47]="PionStartY";
+  Variable[48]="PionStartZ";
+
+
+  Variable[49]="Pion2TrackLength";
+  Variable[50]="Pion2PID";
+  Variable[51]="Pion2VtxDistance";
+  Variable[52]="MuonPion2Distance";
+  Variable[53]="Pion2UPlaneHits";
+  Variable[54]="Pion2YPlaneHits";
+  Variable[55]="Pion2VPlaneHits";
+  Variable[56]="Pion2TMVAMip";
+  Variable[57]="Pion2TMVAPi";
+  Variable[58]="Pion2TrkMuonMom";
+  Variable[59]="Pion2MCSMuonMom";
+  Variable[60]="Pion2Theta";
+  Variable[61]="Pion2CosTheta";
+  Variable[62]="Pion2Phi";
+  Variable[63]="Pion2StartX";
+  Variable[64]="Pion2StartY";
+  Variable[65]="Pion2StartZ";
+
+
+  Variable[66]="Pion3TrackLength";
+  Variable[67]="Pion3PID";
+  Variable[68]="Pion3VtxDistance";
+  Variable[69]="MuonPion3Distance";
+  Variable[70]="Pion3UPlaneHits";
+  Variable[71]="Pion3YPlaneHits";
+  Variable[72]="Pion3VPlaneHits";
+  Variable[73]="Pion3TMVAMip";
+  Variable[74]="Pion3TMVAPi";
+  Variable[75]="Pion3TrkMuonMom";
+  Variable[76]="Pion3MCSMuonMom";
+  Variable[77]="Pion3Theta";
+  Variable[78]="Pion3CosTheta";
+  Variable[79]="Pion3Phi";
+  Variable[80]="Pion3StartX";
+  Variable[81]="Pion3StartY";
+  Variable[82]="Pion3StartZ";
+
+
+
+  const int nsamples = 6;
+  TString Sample[nsamples];
+  Sample[0]="AllMC";
+  Sample[1]="Signal";
+  Sample[2]="Background";
+  Sample[3]="EXT";
+  Sample[4]="OOFV";
+  Sample[5]="Data";
+
+  TH1F *Histos[ncuts][nsamples][nvariables];
+
+  for(int c=0;c<ncuts;c++){
+    for(int v=0;v<nvariables;v++){
+      for(int s=0;s<nsamples;s++){
+	
+ 
+	if(v<28 || v>32) Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",100,-1,-1);
+	else if(v<30)  Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",30,0,0.3);
+	else if(v==30) Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",180,0, 180);
+	else if(v==31 || v==32)  Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",100,-1,-1);
+
+	if(s!=4) Histos[c][s][v] ->SetLineColor(s+1);
+	Histos[c][s][v] ->GetXaxis()->SetTitle(Variable[v]);
+	Histos[c][s][v] ->SetTitle(CutsName[c]);
+
+      }
+    }
+  }
+
+
+
+
+
+
+  std::vector<std::string> Files = {"/data/uboone/new_numi_flux/Run1_fhc_new_numi_flux_fhc_pandora_ntuple.root" // //MC overlay - new numi flux
+    ,"/data/uboone/new_numi_flux/Run2_fhc_new_numi_flux_fhc_pandora_ntuple.root"
+    ,"/data/uboone/new_numi_flux/Run4_fhc_new_numi_flux_fhc_pandora_ntuple.root"
+    ,"/data/uboone/new_numi_flux/Run5_fhc_new_numi_flux_fhc_pandora_ntuple.root"
+    ,"/data/uboone/EXT/beamoff_run1Andrun3.root" //neutrinoselection_filt_run1_beamoff.root" // EXT beam off
+    ,"/data/uboone/dirt/prodgenie_numi_uboone_overlay_dirt_fhc_mcc9_run1_v28_all_snapshot.root" // Dirt - the old numi flux
+    //,"/data/uboone/beam_on/neutrinoselection_filt_run1_beamon_beamgood.root" // Data - 
+  };
+
+  std::ofstream output("backtracked_showers.txt");
+
+
+  //POTs and Trigger from Patrick
+  //
+  // Run 1 FHC: 2.192e+20 POT, 5748692.0 triggers
+  // Run 1 FHC: 3.283e+20 POT, 9846635.0 triggers  // with open trigger
+  // Run 2 FHC: 1.268e+20 POT, 3535129.0 triggers
+  // Run 4 FHC: 2.075e+20 POT, 4131149.0 triggers
+  // Run 5 FHC: 2.231e+20 POT, 5154196.0 triggers
+
+  //Beam Off:
+  // Run 1 FHC Triggers 4582248.27
+  // Run 2 FHC:         10021551.40
+  // Run 4 FHC:         8060024.70 (4c) + 17432345.70 (4d)
+  // Run 5 FHC:         19256341.475
+
+
+  double dataPoT[4] ={0};   // in e+20 PoT
+  dataPoT[0] = 3.283; //Run1 inclusind open trigger  
+  dataPoT[1] = 1.268;  //Run2 
+  dataPoT[2] = 2.075;  //Run4
+  dataPoT[3] = 2.231;  //Run5
+
+  double MCPoT[4] ={0};     // ine+20
+  MCPoT[0] = 23.282;  //Run1
+  MCPoT[1] = 24.9337; //Run2
+  MCPoT[2] = 11.04+17.295;//Run4
+  MCPoT[3] = 63.145; //Run5 
+
+
+  double totalDataPoT=0;
+  double totalMCPoT=0;
+
+  double Scale[7] ={1};
+  for(int i=0;i<4;i++){   
+    Scale[i] = dataPoT[i]/MCPoT[i];      // data/simulation;
+    totalDataPoT+=dataPoT[i];
+    totalMCPoT+=MCPoT[i];
+  }
+
+     
+  Scale[5] = totalDataPoT/16.739;      // Run1 dirt from David 1.67392e+21
+  Scale[4]  = 7809962/(610496.0+3211097.0);// 5748692.0/9199232.0;  // Run1+Run3 beam off triggers scaling to beam on triggers
+
+
+  double test_min=0.0;
+  double test_max=1.0;
+  double test_step=2.0;
+
+  for(double test=test_min; test<test_max; test+=test_step)
+    { // TEST
+
+      for(int cc=0;cc<ncuts;cc++){
+	for(int j=0;j<7;j++){
+	  Selected[cc][j]=0;
+	}
+      }
+
+
+
+
+      for(size_t i_f=0;i_f<Files.size();i_f++){
+	TFile* f = TFile::Open(Files.at(i_f).c_str());
+	if ((!f) || f->IsZombie()) { delete f; return; } // just a precaution
+	TTree *t;
+
+	f->GetObject("nuselection/NeutrinoSelectionFilter", t);
+
+	/*
+	  if(Files.at(i_f).find("beamoff") != std::string::npos){
+	  f->GetObject("nuselection/NeutrinoSelectionFilter",t);
+	  } else {
+	  f->GetObject("NeutrinoSelectionFilter", t);
+	  }
+	*/
+
+	std::cout << "Processing file: " << Files.at(i_f) << std::endl;
+	if (!t) {
+	  delete f;
+	  std::cout << "No tree NeutrinoSelectionFilter found in file " << Files.at(i_f) << std::endl;
+	  return;
+	} // just a precaution
+
+	t->SetMakeClass(1); // tree in MakeClass mode
+	t->SetBranchStatus("*", 0); // disable all branches
+
+	Int_t           run;
+	Int_t           sub;
+	Int_t           evt;
+	Int_t           nu_pdg;
+	Int_t           ccnc;
+	Int_t           interaction;
+	Float_t         true_nu_px;
+	Float_t         true_nu_py;
+	Float_t         true_nu_pz;
+	Float_t         reco_nu_vtx_sce_x;
+	Float_t         reco_nu_vtx_sce_y;
+	Float_t         reco_nu_vtx_sce_z;
+	vector<int>     *backtracked_pdg;
+	vector<float>   *backtracked_start_x;
+	vector<float>   *backtracked_start_y;
+	vector<float>   *backtracked_start_z;
+        vector<float>   *backtracked_px;
+        vector<float>   *backtracked_py;
+        vector<float>   *backtracked_pz;
+        vector<float>   *backtracked_e;
+
+
+	Int_t           n_tracks;
+	Int_t           n_showers;
+	vector<float>   *trk_score_v;
+	vector<int>     *mc_pdg;
+	vector<float>   *mc_E;
+	vector<float>   *mc_vx;
+	vector<float>   *mc_vy;
+	vector<float>   *mc_vz;
+	vector<float>   *mc_endx;
+	vector<float>   *mc_endy;
+	vector<float>   *mc_endz;
+	vector<float>   *mc_px;
+	vector<float>   *mc_py;
+	vector<float>   *mc_pz;
+	vector<float>   *trk_dir_x_v;
+	vector<float>   *trk_dir_y_v;
+	vector<float>   *trk_dir_z_v;
+	vector<float>   *trk_sce_start_x_v;
+	vector<float>   *trk_sce_start_y_v;
+	vector<float>   *trk_sce_start_z_v;
+	vector<float>   *trk_sce_end_x_v;
+	vector<float>   *trk_sce_end_y_v;
+	vector<float>   *trk_sce_end_z_v;
+	vector<float>   *trk_len_v;
+	vector<float>   *trk_calo_energy_u_v;
+	vector<float>   *trk_calo_energy_v_v;
+	vector<float>   *trk_calo_energy_y_v;
+	vector<float>   *trk_llr_pid_score_v;
+	Float_t         topological_score;
+	vector<int>     *pfnplanehits_U;
+	vector<int>     *pfnplanehits_V;
+	vector<int>     *pfnplanehits_Y;
+	Size_t          *trk_id;
+	vector<unsigned int> *pfp_generation_v;
+	vector<float>   *trk_bragg_p_v;
+	vector<float>   *trk_bragg_mu_v;
+	vector<float>   *trk_bragg_mip_v;
+	vector<float>   *shr_start_x_v;
+	vector<float>   *shr_start_y_v;
+	vector<float>   *shr_start_z_v;
+	vector<float>   *shr_dist_v;
+	vector<float>   *shr_moliere_avg_v;
+	vector<float>   *shr_moliere_rms_v;
+	vector<float>   *shr_tkfit_dedx_u_v;
+	vector<float>   *shr_tkfit_dedx_v_v;
+	vector<float>   *shr_tkfit_dedx_y_v;
+   	
+	vector<float>   *trk_mcs_muon_mom_v;
+   	vector<float>   *trk_range_muon_mom_v;
+
+        Float_t ppfx_cv;
+	Float_t weightTune;
+
+	float trk_bragg_p_v_tmva;
+	float trk_bragg_mu_v_tmva;
+	float trk_bragg_mip_v_tmva;
+	float trk_llr_pid_score_v_tmva;
+	float trk_len_v_tmva;
+	float trk_sce_end_x_v_tmva;
+	float trk_sce_end_y_v_tmva;
+	float trk_sce_end_z_v_tmva;
+	float trk_score_v_tmva;
+	// float isContained_tmva;
+
+	float trk_bragg_p_v_tmva_mu;
+	float trk_bragg_mu_v_tmva_mu;
+	float trk_bragg_mip_v_tmva_mu;
+	float trk_llr_pid_score_v_tmva_mu;
+	float trk_len_v_tmva_mu;
+	float trk_sce_end_x_v_tmva_mu;
+	float trk_sce_end_y_v_tmva_mu;
+	float trk_sce_end_z_v_tmva_mu;
+	float trk_score_v_tmva_mu;
+
+	float trk_bragg_p_v_tmva_pi;
+	float trk_bragg_mu_v_tmva_pi;
+	float trk_bragg_mip_v_tmva_pi;
+	float trk_llr_pid_score_v_tmva_pi;
+	float trk_len_v_tmva_pi;
+	float trk_sce_end_x_v_tmva_pi;
+	float trk_sce_end_y_v_tmva_pi;
+	float trk_sce_end_z_v_tmva_pi;
+	float trk_score_v_tmva_pi;
+
+
+	TMVA::Reader * tmvaReader = new TMVA::Reader();
+	tmvaReader->AddVariable("trk_bragg_p_v", &trk_bragg_p_v_tmva);
+	tmvaReader->AddVariable("trk_bragg_mu_v", &trk_bragg_mu_v_tmva);
+	tmvaReader->AddVariable("trk_bragg_mip_v", &trk_bragg_mip_v_tmva);
+	tmvaReader->AddVariable("trk_llr_pid_score_v", &trk_llr_pid_score_v_tmva);
+	tmvaReader->AddVariable("trk_score_v", &trk_score_v_tmva);
+//	tmvaReader->AddVariable("trk_len_v", &trk_len_v_tmva);
+	tmvaReader->AddVariable("trk_sce_end_x_v", &trk_sce_end_x_v_tmva);
+	tmvaReader->AddVariable("trk_sce_end_y_v", &trk_sce_end_y_v_tmva);
+	tmvaReader->AddVariable("trk_sce_end_z_v", &trk_sce_end_z_v_tmva);
+	//tmvaReader->AddVariable("isContained_out", &isContained_tmva);
+
+	TMVA::Reader * tmvaReader_mu = new TMVA::Reader();
+	tmvaReader_mu->AddVariable("trk_bragg_p_v", &trk_bragg_p_v_tmva_mu);
+	tmvaReader_mu->AddVariable("trk_bragg_mu_v", &trk_bragg_mu_v_tmva_mu);
+	tmvaReader_mu->AddVariable("trk_bragg_mip_v", &trk_bragg_mip_v_tmva_mu);
+	tmvaReader_mu->AddVariable("trk_llr_pid_score_v", &trk_llr_pid_score_v_tmva_mu);
+	tmvaReader_mu->AddVariable("trk_score_v", &trk_score_v_tmva_mu);
+	tmvaReader_mu->AddVariable("trk_len_v", &trk_len_v_tmva_mu);
+	tmvaReader_mu->AddVariable("trk_sce_end_x_v", &trk_sce_end_x_v_tmva_mu);
+	tmvaReader_mu->AddVariable("trk_sce_end_y_v", &trk_sce_end_y_v_tmva_mu);
+	tmvaReader_mu->AddVariable("trk_sce_end_z_v", &trk_sce_end_z_v_tmva_mu);
+
+	TMVA::Reader * tmvaReader_pi = new TMVA::Reader();
+	tmvaReader_pi->AddVariable("trk_bragg_p_v", &trk_bragg_p_v_tmva_pi);
+	tmvaReader_pi->AddVariable("trk_bragg_mu_v", &trk_bragg_mu_v_tmva_pi);
+	tmvaReader_pi->AddVariable("trk_bragg_mip_v", &trk_bragg_mip_v_tmva_pi);
+	tmvaReader_pi->AddVariable("trk_llr_pid_score_v", &trk_llr_pid_score_v_tmva_pi);
+	tmvaReader_pi->AddVariable("trk_score_v", &trk_score_v_tmva_pi);
+//	tmvaReader_pi->AddVariable("trk_len_v", &trk_len_v_tmva_pi);
+	tmvaReader_pi->AddVariable("trk_sce_end_x_v", &trk_sce_end_x_v_tmva_pi);
+	tmvaReader_pi->AddVariable("trk_sce_end_y_v", &trk_sce_end_y_v_tmva_pi);
+	tmvaReader_pi->AddVariable("trk_sce_end_z_v", &trk_sce_end_z_v_tmva_pi);
+
+
+
+
+	std::string weightFileName = "booster_decision_tree/dataset_MIP_BDT_no_len/weights/TMVAClassification_BDT.weights.xml";
+	tmvaReader->BookMVA("BDT",  weightFileName.c_str());
+
+	std::string weightFileName_mu = "booster_decision_tree/dataset_muon_BDT/weights/TMVAClassification_BDT.weights.xml";
+	tmvaReader_mu->BookMVA("BDT",  weightFileName_mu.c_str());
+
+	std::string weightFileName_pi = "booster_decision_tree/dataset_pion_BDT_no_len/weights/TMVAClassification_BDT.weights.xml";
+	tmvaReader_pi->BookMVA("BDT",  weightFileName_pi.c_str());
+
+
+
+
+
+
+
+
+
+	backtracked_pdg = 0;
+	backtracked_start_x = 0;
+	backtracked_start_y = 0;
+	backtracked_start_z = 0;
+
+        backtracked_px = 0;
+        backtracked_py = 0;
+        backtracked_pz = 0;
+        backtracked_e = 0;
+
+	trk_score_v = 0;
+	mc_pdg = 0;
+	mc_E = 0;
+	mc_vx = 0;
+	mc_vy = 0;
+	mc_vz = 0;
+	mc_endx = 0;
+	mc_endy = 0;
+	mc_endz = 0;
+	mc_px = 0;
+	mc_py = 0;
+	mc_pz = 0;
+	trk_sce_start_x_v = 0;
+	trk_sce_start_y_v = 0;
+	trk_sce_start_z_v = 0;
+	trk_sce_end_x_v = 0;
+	trk_sce_end_y_v = 0;
+	trk_sce_end_z_v = 0;
+	trk_dir_x_v = 0;
+	trk_dir_y_v = 0;
+	trk_dir_z_v = 0;
+	trk_len_v = 0;
+	trk_calo_energy_u_v = 0;
+	trk_calo_energy_v_v = 0;
+	trk_calo_energy_y_v = 0;
+	trk_llr_pid_score_v = 0;
+	pfnplanehits_U = 0;
+	pfnplanehits_V = 0;
+	pfnplanehits_Y = 0;
+	trk_id = 0;
+	pfp_generation_v = 0;
+	trk_bragg_p_v = 0;
+	trk_bragg_mu_v = 0;
+	trk_bragg_mip_v = 0;
+	shr_start_x_v = 0;
+	shr_start_y_v = 0;
+	shr_start_z_v = 0;	
+	shr_dist_v = 0;
+	shr_moliere_avg_v = 0;
+	shr_moliere_rms_v = 0;
+	shr_tkfit_dedx_u_v = 0;
+	shr_tkfit_dedx_v_v = 0;
+	shr_tkfit_dedx_y_v = 0;
+ 
+ 	trk_mcs_muon_mom_v = 0;
+   	trk_range_muon_mom_v = 0;
+
+        ppfx_cv = 1.0;
+	weightTune = 1.0;
+  
+	t->SetBranchStatus("run",1);
+	t->SetBranchStatus("sub",1);
+	t->SetBranchStatus("evt",1);
+	t->SetBranchStatus("nu_pdg",1);
+	t->SetBranchStatus("ccnc",1);
+	t->SetBranchStatus("interaction",1);
+	t->SetBranchStatus("true_nu_px",1);
+	t->SetBranchStatus("true_nu_py",1);
+	t->SetBranchStatus("true_nu_pz",1);
+	t->SetBranchStatus("reco_nu_vtx_sce_x",1);
+	t->SetBranchStatus("reco_nu_vtx_sce_y",1);
+	t->SetBranchStatus("reco_nu_vtx_sce_z",1);
+	t->SetBranchStatus("backtracked_pdg",1);
+	t->SetBranchStatus("backtracked_start_x",1);
+	t->SetBranchStatus("backtracked_start_y",1);
+	t->SetBranchStatus("backtracked_start_z",1);
+        t->SetBranchStatus("backtracked_px",1);
+        t->SetBranchStatus("backtracked_py",1);
+        t->SetBranchStatus("backtracked_pz",1);
+        t->SetBranchStatus("backtracked_e",1);
+
+	t->SetBranchStatus("n_tracks",1);
+	t->SetBranchStatus("n_showers",1);
+	t->SetBranchStatus("trk_score_v",1);
+	t->SetBranchStatus("mc_pdg",1);
+	t->SetBranchStatus("mc_E",1);
+	t->SetBranchStatus("mc_vx",1);
+	t->SetBranchStatus("mc_vy",1);
+	t->SetBranchStatus("mc_vz",1);
+	t->SetBranchStatus("mc_endx",1);
+	t->SetBranchStatus("mc_endy",1);
+	t->SetBranchStatus("mc_endz",1);
+	t->SetBranchStatus("mc_px",1);
+	t->SetBranchStatus("mc_py",1);
+	t->SetBranchStatus("mc_pz",1);
+	t->SetBranchStatus("trk_sce_start_x_v",1);
+	t->SetBranchStatus("trk_sce_start_y_v",1);
+	t->SetBranchStatus("trk_sce_start_z_v",1);
+	t->SetBranchStatus("trk_sce_end_x_v",1);
+	t->SetBranchStatus("trk_sce_end_y_v",1);
+	t->SetBranchStatus("trk_sce_end_z_v",1);
+	t->SetBranchStatus("trk_dir_x_v",1);
+	t->SetBranchStatus("trk_dir_y_v",1);
+	t->SetBranchStatus("trk_dir_z_v",1);
+	t->SetBranchStatus("trk_len_v",1);
+	t->SetBranchStatus("trk_calo_energy_u_v",1);
+	t->SetBranchStatus("trk_calo_energy_v_v",1);
+	t->SetBranchStatus("trk_calo_energy_y_v",1);
+	t->SetBranchStatus("trk_llr_pid_score_v",1);
+	t->SetBranchStatus("topological_score",1);
+	t->SetBranchStatus("pfnplanehits_U",1);
+	t->SetBranchStatus("pfnplanehits_V",1);
+	t->SetBranchStatus("pfnplanehits_Y",1);
+	t->SetBranchStatus("trk_id",1);
+	t->SetBranchStatus("pfp_generation_v",1);
+	t->SetBranchStatus("trk_bragg_p_v",1);
+	t->SetBranchStatus("trk_bragg_mu_v",1);
+	t->SetBranchStatus("trk_bragg_mip_v",1);
+	t->SetBranchStatus("shr_start_x_v",1);
+	t->SetBranchStatus("shr_start_y_v",1);
+	t->SetBranchStatus("shr_start_z_v",1);
+	t->SetBranchStatus("shr_dist_v",1);
+	t->SetBranchStatus("backtracked_purity",1);
+	t->SetBranchStatus("shr_moliere_avg_v",1);
+	t->SetBranchStatus("shr_moliere_rms_v",1);
+	t->SetBranchStatus("shr_tkfit_dedx_u_v",1);
+	t->SetBranchStatus("shr_tkfit_dedx_v_v",1);
+	t->SetBranchStatus("shr_tkfit_dedx_y_v",1);
+  	t->SetBranchStatus("trk_mcs_muon_mom_v",1);
+   	t->SetBranchStatus("trk_range_muon_mom_v",1);
+
+  	t->SetBranchStatus("ppfx_cv",1);
+	t->SetBranchStatus("weightTune",1);
+
+
+
+
+	t->SetBranchAddress("run", &run);
+	t->SetBranchAddress("sub", &sub);
+	t->SetBranchAddress("evt", &evt);
+	t->SetBranchAddress("nu_pdg", &nu_pdg);
+	t->SetBranchAddress("ccnc", &ccnc);
+	t->SetBranchAddress("interaction", &interaction);
+	t->SetBranchAddress("true_nu_px", &true_nu_px);
+	t->SetBranchAddress("true_nu_py", &true_nu_py);
+	t->SetBranchAddress("true_nu_pz", &true_nu_pz);
+	t->SetBranchAddress("reco_nu_vtx_sce_x", &reco_nu_vtx_sce_x);
+	t->SetBranchAddress("reco_nu_vtx_sce_y", &reco_nu_vtx_sce_y);
+	t->SetBranchAddress("reco_nu_vtx_sce_z", &reco_nu_vtx_sce_z);
+	t->SetBranchAddress("backtracked_pdg",&backtracked_pdg);
+	t->SetBranchAddress("backtracked_start_x",&backtracked_start_x);
+	t->SetBranchAddress("backtracked_start_y",&backtracked_start_y);
+	t->SetBranchAddress("backtracked_start_z",&backtracked_start_z);
+        t->SetBranchAddress("backtracked_px",&backtracked_px);
+        t->SetBranchAddress("backtracked_py",&backtracked_py);
+        t->SetBranchAddress("backtracked_pz",&backtracked_pz);
+        t->SetBranchAddress("backtracked_e", &backtracked_e);
+	
+	t->SetBranchAddress("n_tracks", &n_tracks);
+	t->SetBranchAddress("n_showers", &n_showers);
+	t->SetBranchAddress("trk_score_v", &trk_score_v);
+	t->SetBranchAddress("mc_pdg", &mc_pdg);
+	t->SetBranchAddress("mc_E", &mc_E);
+	t->SetBranchAddress("mc_vx", &mc_vx);
+	t->SetBranchAddress("mc_vy", &mc_vy);
+	t->SetBranchAddress("mc_vz", &mc_vz);
+	t->SetBranchAddress("mc_endx", &mc_endx);
+	t->SetBranchAddress("mc_endy", &mc_endy);
+	t->SetBranchAddress("mc_endz", &mc_endz);
+	t->SetBranchAddress("mc_px", &mc_px);
+	t->SetBranchAddress("mc_py", &mc_py);
+	t->SetBranchAddress("mc_pz", &mc_pz);
+	t->SetBranchAddress("trk_sce_start_x_v", &trk_sce_start_x_v);
+	t->SetBranchAddress("trk_sce_start_y_v", &trk_sce_start_y_v);
+	t->SetBranchAddress("trk_sce_start_z_v", &trk_sce_start_z_v);
+	t->SetBranchAddress("trk_sce_end_x_v", &trk_sce_end_x_v);
+	t->SetBranchAddress("trk_sce_end_y_v", &trk_sce_end_y_v);
+	t->SetBranchAddress("trk_sce_end_z_v", &trk_sce_end_z_v);
+	t->SetBranchAddress("trk_dir_x_v", &trk_dir_x_v);
+	t->SetBranchAddress("trk_dir_y_v", &trk_dir_y_v);
+	t->SetBranchAddress("trk_dir_z_v", &trk_dir_z_v);
+	t->SetBranchAddress("trk_len_v", &trk_len_v);
+	t->SetBranchAddress("trk_calo_energy_u_v", &trk_calo_energy_u_v);
+	t->SetBranchAddress("trk_calo_energy_v_v", &trk_calo_energy_v_v);
+	t->SetBranchAddress("trk_calo_energy_y_v", &trk_calo_energy_y_v);
+	t->SetBranchAddress("trk_llr_pid_score_v", &trk_llr_pid_score_v);
+	t->SetBranchAddress("topological_score", &topological_score);
+	t->SetBranchAddress("pfnplanehits_U", &pfnplanehits_U);
+	t->SetBranchAddress("pfnplanehits_V", &pfnplanehits_V);
+	t->SetBranchAddress("pfnplanehits_Y", &pfnplanehits_Y);
+	t->SetBranchAddress("trk_id", &trk_id);
+	t->SetBranchAddress("pfp_generation_v", &pfp_generation_v);
+	t->SetBranchAddress("trk_bragg_p_v", &trk_bragg_p_v);
+	t->SetBranchAddress("trk_bragg_mu_v", &trk_bragg_mu_v);
+	t->SetBranchAddress("trk_bragg_mip_v", &trk_bragg_mip_v);
+	t->SetBranchAddress("shr_start_x_v", &shr_start_x_v);
+	t->SetBranchAddress("shr_start_y_v", &shr_start_y_v);
+	t->SetBranchAddress("shr_start_z_v", &shr_start_z_v);
+	t->SetBranchAddress("shr_dist_v", &shr_dist_v);
+	t->SetBranchAddress("shr_moliere_avg_v", &shr_moliere_avg_v);
+	t->SetBranchAddress("shr_moliere_rms_v", &shr_moliere_rms_v);
+	t->SetBranchAddress("shr_tkfit_dedx_u_v",&shr_tkfit_dedx_u_v);
+	t->SetBranchAddress("shr_tkfit_dedx_v_v",&shr_tkfit_dedx_v_v);
+	t->SetBranchAddress("shr_tkfit_dedx_y_v",&shr_tkfit_dedx_y_v);
+        t->SetBranchAddress("trk_mcs_muon_mom_v", &trk_mcs_muon_mom_v);
+   	t->SetBranchAddress("trk_range_muon_mom_v", &trk_range_muon_mom_v);
+        t->SetBranchAddress("ppfx_cv", &ppfx_cv);
+	t->SetBranchAddress("weightTune", &weightTune);
+
+
+     
+	Long64_t nentries =t->GetEntries();
+
+	int tracknumber =0;
+
+	if(i_f==4) nentries =1000;
+
+	std::cout<<"Number of Events="<<nentries<<std::endl;
+	for(int ientry=0;ientry<nentries;ientry++){
+	  t->GetEntry(ientry);
+
+	  if(ientry%100000==0)std::cout<<ientry<<std::endl;
+
+	  int pion_number = 0;
+	  int muon_index = -1;
+	  int pion_index[10] = {-1,-1,-1};
+	  int shower_index = -1;
+	  bool sel_has_muon_candidate = false;
+	  bool sel_has_pion_candidate = false;
+	  bool sel_nu_mu_cc = false;
+	  bool sel_passed_topo_cut = false;
+	  double muon_trk_score = 0.8;
+	  double muon_trk_start_dist =  4.0; //cm
+	  double muon_trk_len = 10; //cm
+	  double muon_pid_score = 0.2;
+	  double topo_cut = 0.9;
+          double pion_trk_len = 20; //cm
+
+	  bool pion_in_gap = false;
+	  bool muon_in_gap = false;
+	  int contained_pions = 0;
+	  bool sel_contained_pions = false;
+	  double mu_pi_opening_angle = 0.0;
+	  //double muon_is_correct = 0.0;
+	  //double sel_has_a_muon = 0.0;
+	  bool one_shower = false;
+	  bool plane_hits = false;
+	  bool mol_avg = false;
+	  bool shower_cut = false;
+	  bool flash_cut = false;
+	  bool Cuts[11] ={false};
+
+
+
+	  //      if(mc_pdg->size() == 0) continue;
+
+
+
+	  bool signal = false;
+
+	  bool in_fiducial_volume_true = false;  
+
+	  int nprotons=0, npions=0, nmuons=0, npionszero=0, npionsmin=0, nkaons=0;
+
+          double mc_muon_momentum = -999.9;
+	  double mc_pion_momentum[10] = {-999.9};
+	  double mc_opening_angle = -999.9;
+
+	  if(mc_pdg->size() ) {
+	 
+		  TVector3 mc_muon_mom;
+              	  TVector3 mc_pion_mom;
+
+              
+	    for(size_t i_mc=0; i_mc<mc_pdg->size();i_mc++){
+             // if(mc_pdg->at(i_mc)==14) std::cout<<i_mc<<"\t"<< mc_pdg->at(i_mc)<<"\t"<< mc_E->at(i_mc)<<std::endl;
+	      if(mc_pdg->at(i_mc) == 2212)     nprotons++;
+	      if(abs(mc_pdg->at(i_mc)) == 13)  {
+		      nmuons++;
+		      mc_muon_mom.SetXYZ(mc_px->at(i_mc), mc_py->at(i_mc), mc_pz->at(i_mc));
+		      mc_muon_momentum=mc_muon_mom.Mag();
+	//	      std::cout<<"muon1=";    mc_muon_mom.Print();
+
+	      }
+	      if(abs(mc_pdg->at(i_mc)) == 211) {
+		      npions++;
+		      mc_pion_mom.SetXYZ(mc_px->at(i_mc), mc_py->at(i_mc), mc_pz->at(i_mc));
+		      mc_pion_momentum[npions-1]=mc_pion_mom.Mag();
+	//	      std::cout<<"pion="; mc_pion_mom.Print();
+
+	      }
+
+	      if(mc_pdg->at(i_mc) == 111)   npionszero++;
+
+	      if( abs(mc_pdg->at(i_mc))==312  || mc_pdg->at(i_mc)==310 || mc_pdg->at(i_mc)==130 || mc_pdg->at(i_mc)==311 ) nkaons++;
+	       
+	    }
+
+
+	       if(nmuons==1 && npions==1){
+                      mc_opening_angle= mc_pion_mom.Angle(mc_muon_mom)*180.0/3.142;
+                     // mc_muon_mom.Print();
+                     // mc_pion_mom.Print();
+
+                     // std::cout<<mc_opening_angle<<"\t"<<mc_pion_momentum<<"\t"<<mc_muon_momentum<<std::endl;
+                }
+
+
+      
+	    TVector3 Reco_Vertex(reco_nu_vtx_sce_x,reco_nu_vtx_sce_y,reco_nu_vtx_sce_z);
+	    TVector3 true_vertex(mc_vx->at(0),mc_vy->at(0),mc_vz->at(0));
+
+	    in_fiducial_volume_true = inFV(true_vertex);		
+	    bool in_fiducial_volume_reco = inFV(Reco_Vertex);
+
+	 //  if(trk_ilen.size() > 0) flash_cut = true;
+	    //Signal definition
+	    //      bool signal = false;
+
+						
+	    if( (in_fiducial_volume_true) 
+	        && (nmuons==1) && (npionszero==0) &&  (npions== 3) && (nkaons==0) 
+	        && (abs(nu_pdg) == 14) 
+	        && (mc_muon_momentum>0.1) && (mc_pion_momentum[0]>0.1) && (mc_pion_momentum[1]>0.1)&& (mc_pion_momentum[2]>0.1)
+//		&& (mc_opening_angle *180.0/3.14< 150)
+	      )
+	      {
+	      signal = true;
+	    }
+
+	  }
+
+        if (abs(nu_pdg)==14) nu_mu++;
+	if (abs(nu_pdg)==12) nu_e++;
+
+
+	  //reconstructed staff
+	  
+	  
+
+
+
+	  TVector3 Reco_Vertex(reco_nu_vtx_sce_x,reco_nu_vtx_sce_y,reco_nu_vtx_sce_z);
+	  bool in_fiducial_volume_reco = inFV(Reco_Vertex);
+
+
+	  //topological score 
+
+	  if(topological_score > topo_cut){
+	    sel_passed_topo_cut = true;
+	  }
+
+
+	  //end of topological score
+
+
+
+
+
+
+	  int uncontained = 0;
+	  int nonproton = 0;
+	  int nPrimaryShowers = 0;
+	  int nPrimaryTracks = 0;
+	  std::vector<std::pair<int, float>> trk_llr_proto;
+	  std::vector<std::pair<int, float>> trk_ilen;
+
+           if(trk_len_v->size() > 0) flash_cut = true;
+
+	  for(int i = 0; i< trk_len_v->size(); i++) {
+	    TVector3 endpoint(trk_sce_end_x_v->at(i),trk_sce_end_y_v->at(i),trk_sce_end_z_v->at(i));
+
+	    if(pfp_generation_v->at(i) !=2) continue;
+	
+	    if(trk_score_v->at(i) >= 0.5){
+	      nPrimaryTracks++;
+
+	      if(!isContained(endpoint) && (trk_len_v->at(i) > 0) )  uncontained++;
+
+	      if(trk_llr_pid_score_v->at(i) > 0.1  )  nonproton++;
+	
+
+	      trk_llr_proto.push_back({i, trk_llr_pid_score_v->at(i)});
+	      trk_ilen.push_back({i, trk_len_v->at(i)});
+
+	    }
+	    else{
+	      nPrimaryShowers++;
+	      shower_index = i;
+	    }
+	
+	  }
+
+
+
+	  std::sort(trk_llr_proto.begin(), trk_llr_proto.end(), [](std::pair<int, float> a, std::pair<int, float> b) {
+	    return a.second > b.second;
+	  });
+
+
+	  std::sort(trk_ilen.begin(), trk_ilen.end(), [](std::pair<int, float> a, std::pair<int, float> b) {
+	    return a.second > b.second;
+	  });
+
+
+
+	  int i_max_len=0; 
+	  if(trk_ilen.size() > 0) i_max_len = trk_ilen.at(0).first; //index of the longest primary track
+      
+
+
+	  TVector3 reco_primary_vtx(reco_nu_vtx_sce_x,reco_nu_vtx_sce_y,reco_nu_vtx_sce_z);
+
+	  TVector3 track_start(-1.0,-1.0,-1.0);
+	  TVector3 nu_to_track_dist(-1.0,-1.0,-1.0);
+
+	  if(trk_ilen.size() > 0){
+	    track_start = TVector3 (trk_sce_start_x_v->at(i_max_len),trk_sce_start_y_v->at(i_max_len),trk_sce_start_z_v->at(i_max_len));
+	    nu_to_track_dist = TVector3 (track_start - reco_primary_vtx);
+	  }
+
+
+	  for(size_t i_a = 0; i_a < trk_len_v->size(); i_a++){
+
+
+	    if((pfp_generation_v->at(i_a) ==2) &&(trk_score_v->at(i_a) >= 0.5)
+	       && (trk_llr_pid_score_v->at(i_a) > -1) && (trk_llr_pid_score_v->at(i_a) < 2)
+	       && (trk_bragg_p_v->at(i_a)  > 0) && (trk_bragg_p_v->at(i_a)  < 500) 
+	       && (trk_bragg_mu_v->at(i_a) > 0) && (trk_bragg_mu_v->at(i_a) < 500)
+	       && (trk_bragg_mip_v->at(i_a)> 0) && (trk_bragg_mip_v->at(i_a)< 500) 
+	       && (trk_len_v->at(i_a) < 1e6) && (trk_len_v->at(i_a) > 0)
+	       ){
+
+	      float tmvaOutput_mip = 0.0;
+	      //	  float tmvaOutput_mu = 0.0;
+
+
+	      trk_bragg_p_v_tmva = trk_bragg_p_v->at(i_a);
+	      trk_bragg_mu_v_tmva = trk_bragg_mu_v->at(i_a);
+	      trk_bragg_mip_v_tmva = trk_bragg_mip_v->at(i_a);
+	      trk_llr_pid_score_v_tmva = trk_llr_pid_score_v->at(i_a);
+	      trk_score_v_tmva = trk_score_v->at(i_a);
+	      trk_len_v_tmva = trk_len_v->at(i_a);
+	      trk_sce_end_x_v_tmva = trk_sce_end_x_v->at(i_a);
+	      trk_sce_end_y_v_tmva = trk_sce_end_y_v->at(i_a);
+	      trk_sce_end_z_v_tmva = trk_sce_end_z_v->at(i_a);
+	      tmvaOutput_mip = tmvaReader->EvaluateMVA("BDT");
+
+
+
+	      TVector3 track_start_ia (trk_sce_start_x_v->at(i_a),trk_sce_start_y_v->at(i_a),trk_sce_start_z_v->at(i_a));
+	      TVector3 nu_to_track_dist_ia (track_start_ia - reco_primary_vtx);
+
+	      //chaned dist to dist_ia to check if it makes ay difference.
+
+	      if(  (trk_score_v->at(i_a) > muon_trk_score) && (nu_to_track_dist_ia.Mag() <= 4) 
+		   &&(trk_len_v->at(i_a) > muon_trk_len) && (trk_llr_pid_score_v->at(i_a) > muon_pid_score) 
+		   &&  (tmvaOutput_mip >= -0.1)){
+
+
+		sel_has_muon_candidate = true;
+
+		if(muon_index == -1){
+		  muon_index = i_a;
+		}
+		else if ((trk_llr_pid_score_v->at(i_a) > trk_llr_pid_score_v->at(muon_index))){
+		  muon_index = i_a;
+		}
+
+	      }
+	    }
+
+	  }
+
+	  if(muon_index != -1){
+	    muon_in_gap = ((pfnplanehits_U->at(muon_index)>=1)&&
+			   (pfnplanehits_V->at(muon_index)>=1)&& (pfnplanehits_Y->at(muon_index)>=1));
+	  }
+
+							
+
+
+	  //PION INDEX SELECTION
+
+	  for (size_t i_b = 0; i_b < trk_len_v->size(); i_b++){
+
+	    if((pfp_generation_v->at(i_b) ==2) && (trk_score_v->at(i_b) >= 0.5)//JN
+	       && (trk_llr_pid_score_v->at(i_b) > -1) && (trk_llr_pid_score_v->at(i_b) < 2)
+	       && (trk_bragg_p_v->at(i_b)  > 0) && (trk_bragg_p_v->at(i_b)  < 500)
+	       && (trk_bragg_mu_v->at(i_b) > 0) && (trk_bragg_mu_v->at(i_b) < 500)
+	       && (trk_bragg_mip_v->at(i_b)> 0) && (trk_bragg_mip_v->at(i_b)< 500)
+	       && (trk_len_v->at(i_b) < 1e6) && (trk_len_v->at(i_b) > 0)
+	       && (i_b != muon_index) //skipp index already assigned to a muon
+	       ){
+
+
+
+	      TVector3 track_start_ib (trk_sce_start_x_v->at(i_b),trk_sce_start_y_v->at(i_b),trk_sce_start_z_v->at(i_b));
+	      TVector3 nu_to_track_dist_ib (track_start_ib - reco_primary_vtx);
+
+            TVector3 pion_endpoint(trk_sce_end_x_v->at(i_b),trk_sce_end_y_v->at(i_b),trk_sce_end_z_v->at(i_b));
+
+           // if ( !(isContained(pion_endpoint)) ) continue;
+
+
+	      float tmvaOutput = 0.0;
+	      float tmvaOutput_pi = 0.0;
+
+	      trk_bragg_p_v_tmva = trk_bragg_p_v->at(i_b);
+	      trk_bragg_mu_v_tmva = trk_bragg_mu_v->at(i_b);
+	      trk_bragg_mip_v_tmva = trk_bragg_mip_v->at(i_b);
+	      trk_llr_pid_score_v_tmva = trk_llr_pid_score_v->at(i_b);
+	      trk_score_v_tmva = trk_score_v->at(i_b);
+	      trk_len_v_tmva = trk_len_v->at(i_b);
+	      trk_sce_end_x_v_tmva = trk_sce_end_x_v->at(i_b);
+	      trk_sce_end_y_v_tmva = trk_sce_end_y_v->at(i_b);
+	      trk_sce_end_z_v_tmva = trk_sce_end_z_v->at(i_b);
+	      tmvaOutput = tmvaReader->EvaluateMVA("BDT");
+
+
+	      trk_bragg_p_v_tmva_pi = trk_bragg_p_v->at(i_b);
+	      trk_bragg_mu_v_tmva_pi = trk_bragg_mu_v->at(i_b);
+	      trk_bragg_mip_v_tmva_pi = trk_bragg_mip_v->at(i_b);
+	      trk_llr_pid_score_v_tmva_pi = trk_llr_pid_score_v->at(i_b);
+	      trk_score_v_tmva_pi = trk_score_v->at(i_b);
+	      trk_len_v_tmva_pi = trk_len_v->at(i_b);
+	      trk_sce_end_x_v_tmva_pi = trk_sce_end_x_v->at(i_b);
+	      trk_sce_end_y_v_tmva_pi = trk_sce_end_y_v->at(i_b);
+	      trk_sce_end_z_v_tmva_pi = trk_sce_end_z_v->at(i_b);
+	      tmvaOutput_pi = tmvaReader_pi->EvaluateMVA("BDT");
+	
+
+
+	      if (    (trk_llr_pid_score_v->at(i_b) > 0.1) 
+		 //  && (nu_to_track_dist_ib.Mag() < 4.0)
+		  // && (tmvaOutput    > -0.1) 
+		  // && (tmvaOutput_pi > -0.1)
+//		   && (trk_len_v->at(i_b) > pion_trk_len) 
+		   ){
+
+
+		pion_number++;
+		pion_index[pion_number-1] = i_b;
+//		std::cout<<pion_number<<"\t"<< pion_index[pion_number]<<std::endl;
+
+		/*
+		if(pion_index == -1){
+		  pion_index = i_b;
+		}
+		else if ((trk_llr_pid_score_v->at(i_b) > trk_llr_pid_score_v->at(pion_index))){
+		  pion_index = i_b;
+		}*/
+	      }
+	    }
+	  }
+
+         
+
+
+
+	  if(pion_index[0] != -1){
+            
+            
+	    pion_in_gap = ((pfnplanehits_U->at(pion_index[0])>0) && (pfnplanehits_V->at(pion_index[0])>0)&& (pfnplanehits_Y->at(pion_index[0])>0));
+	 //   TVector3 pion_endpoint(trk_sce_end_x_v->at(pion_index),trk_sce_end_y_v->at(pion_index),trk_sce_end_z_v->at(pion_index));
+
+	    if ( /*(isContained(pion_endpoint)) && */pion_number==3 )	  sel_contained_pions = true;
+   
+	  }
+
+    
+
+
+	  bool opening_angle_cut=false;
+	  bool muon_to_pion_distance_cut=false;
+
+	  if((muon_index!= -1) && (pion_index[0]!= -1) && (pion_index[1]!= -1)&& (pion_index[2]!= -1) ){
+	    TVector3 MU(trk_dir_x_v->at(muon_index),trk_dir_y_v->at(muon_index),trk_dir_z_v->at(muon_index));
+	    TVector3 PI(trk_dir_x_v->at(pion_index[0]),trk_dir_y_v->at(pion_index[0]),trk_dir_z_v->at(pion_index[0]));
+	    mu_pi_opening_angle = MU.Angle(PI);
+	    if(mu_pi_opening_angle<2.6) opening_angle_cut = true;
+
+		 TVector3 muon_track_start(trk_sce_start_x_v->at(muon_index),trk_sce_start_y_v->at(muon_index),trk_sce_start_z_v->at(muon_index));
+                TVector3 pion1_track_start(trk_sce_start_x_v->at(pion_index[0]),trk_sce_start_y_v->at(pion_index[0]),trk_sce_start_z_v->at(pion_index[0]));
+                TVector3 pion2_track_start(trk_sce_start_x_v->at(pion_index[1]),trk_sce_start_y_v->at(pion_index[1]),trk_sce_start_z_v->at(pion_index[1]));
+                TVector3 pion3_track_start(trk_sce_start_x_v->at(pion_index[2]),trk_sce_start_y_v->at(pion_index[2]),trk_sce_start_z_v->at(pion_index[2]));
+
+                double mupi1dis = (muon_track_start-pion1_track_start).Mag();
+                double mupi2dis = (muon_track_start-pion2_track_start).Mag();
+                double mupi3dis = (muon_track_start-pion3_track_start).Mag();
+
+		if (mupi1dis < 10 && mupi2dis <10 && mupi3dis<10 ) muon_to_pion_distance_cut=true;
+
+
+	  }
+
+     
+
+	  //Shower cut 
+ 
+      
+	  if(nPrimaryShowers==1){
+
+	    TVector3 shower_start (trk_sce_start_x_v->at(shower_index),trk_sce_start_y_v->at(shower_index),trk_sce_start_z_v->at(shower_index));
+	    TVector3 nu_to_shower_dist (shower_start - reco_primary_vtx);
+
+
+	      
+	    // std::cout<<nPrimaryShowers<<"\t"<<shower_index<<"\t"<<nu_to_shower_dist.Mag()<<std::endl;
+	
+	    if((pfnplanehits_Y->at(shower_index)<50) && (pfnplanehits_Y->at(shower_index)>0) && (nu_to_shower_dist.Mag()>10)){
+
+	      shower_cut = true ;
+	    }
+
+	    //	  if(shr_moliere_avg_v->at(i_c) < 200){
+								
+	    //	    mol_avg = true;
+	    //	  }
+
+	  }
+	  else if (nPrimaryShowers==0)  shower_cut = true ;
+
+      
+
+	      
+	  Cuts[0] = true;// in_fiducial_volume_true;  //all events with entries in true FV
+	  Cuts[1] = Cuts[0] && flash_cut;
+	  Cuts[2] = Cuts[1] && in_fiducial_volume_reco; // Events in fiducial volume
+	  Cuts[3] = Cuts[2] && sel_passed_topo_cut;// Topological score 
+	  Cuts[4] = Cuts[3] && sel_has_muon_candidate;// Muon candidate
+	  Cuts[5] = Cuts[4] && sel_contained_pions; //Contained charged pion
+	  Cuts[6] = Cuts[5] && muon_in_gap;
+	  Cuts[7] = Cuts[6] && pion_in_gap;
+	  Cuts[8] = Cuts[7];// && shower_cut; //no or one shower with conditions
+	  Cuts[9] = Cuts[8] && muon_to_pion_distance_cut; //muon-pion distance 
+	  Cuts[10]= Cuts[9] && (nonproton < 10); // no other charged pions
+
+///sanity check for the weights
+
+         
+	  if(!(std::isfinite(weightTune) &&  (weightTune > 0 ) && (weightTune<30)) ) weightTune=1.0;
+	  if(!(std::isfinite(ppfx_cv) &&  (ppfx_cv > 0 ) && (ppfx_cv<30)) )  ppfx_cv=1.0;
+
+
+        std::cout<< std::setprecision(3)<<std::fixed;
+
+
+bool show =0; //change to 0 to suppress the text and 1 to show it
+
+if(Cuts[2]==true && show && signal){
+
+	if(signal)  std::cout<<"Signal event: "<<ientry<< std::endl;
+        if(!signal) std::cout<<"Background event: "<<ientry<<std::endl;
+        std::cout<<"MC Info"<<std::endl;
+	for(size_t i_mc=0; i_mc<mc_pdg->size();i_mc++){
+		TVector3 mc_mom(mc_px->at(i_mc), mc_py->at(i_mc), mc_pz->at(i_mc));
+                std::cout<<i_mc<<"\t"<< mc_pdg->at(i_mc)<<"\t"<< mc_E->at(i_mc)<<"\t"<< mc_mom.Mag()
+			<<"\t"<<mc_vx->at(i_mc)<<"\t"<<mc_vy->at(i_mc)<<"\t"<<mc_vz->at(i_mc)
+			<<"\t"<<mc_endx->at(i_mc)<<"\t"<<mc_endy->at(i_mc)<<"\t"<<mc_endz->at(i_mc)
+			<<std::endl;
+	}
+        std::cout<<"Reco Info"<<std::endl;
+
+	std::cout<<"index \t generation \t \t trk_score \t  trk_len \t  pid \t \t tmva \t\t tmvapi \t\t bragg \t \t distance  \t PDG" <<std::endl;
+	 for (size_t i_b = 0; i_b < trk_len_v->size(); i_b++){
+	//	 if(pfp_generation_v->at(i_b)!=2) continue;
+
+
+              float tmvaOutput = 0.0;
+              float tmvaOutput_pi = 0.0;
+
+              trk_bragg_p_v_tmva = trk_bragg_p_v->at(i_b);
+              trk_bragg_mu_v_tmva = trk_bragg_mu_v->at(i_b);
+              trk_bragg_mip_v_tmva = trk_bragg_mip_v->at(i_b);
+              trk_llr_pid_score_v_tmva = trk_llr_pid_score_v->at(i_b);
+              trk_score_v_tmva = trk_score_v->at(i_b);
+              trk_len_v_tmva = trk_len_v->at(i_b);
+              trk_sce_end_x_v_tmva = trk_sce_end_x_v->at(i_b);
+              trk_sce_end_y_v_tmva = trk_sce_end_y_v->at(i_b);
+              trk_sce_end_z_v_tmva = trk_sce_end_z_v->at(i_b);
+              tmvaOutput = tmvaReader->EvaluateMVA("BDT");
+
+
+              trk_bragg_p_v_tmva_pi = trk_bragg_p_v->at(i_b);
+              trk_bragg_mu_v_tmva_pi = trk_bragg_mu_v->at(i_b);
+              trk_bragg_mip_v_tmva_pi = trk_bragg_mip_v->at(i_b);
+              trk_llr_pid_score_v_tmva_pi = trk_llr_pid_score_v->at(i_b);
+              trk_score_v_tmva_pi = trk_score_v->at(i_b);
+              trk_len_v_tmva_pi = trk_len_v->at(i_b);
+              trk_sce_end_x_v_tmva_pi = trk_sce_end_x_v->at(i_b);
+              trk_sce_end_y_v_tmva_pi = trk_sce_end_y_v->at(i_b);
+              trk_sce_end_z_v_tmva_pi = trk_sce_end_z_v->at(i_b);
+              tmvaOutput_pi = tmvaReader_pi->EvaluateMVA("BDT");
+
+
+
+
+	 	TVector3 track_start_ib (trk_sce_start_x_v->at(i_b),trk_sce_start_y_v->at(i_b),trk_sce_start_z_v->at(i_b));
+         	TVector3 nu_to_track_dist_ib (track_start_ib - reco_primary_vtx); 
+	        double distance = nu_to_track_dist_ib.Mag();	
+	       	std::cout<<i_b
+			 <<"\t \t"<<pfp_generation_v->at(i_b)
+			 <<"\t \t"<<trk_score_v->at(i_b)
+			 <<"\t \t"<<trk_len_v->at(i_b)
+   	          	 <<"\t \t"<<trk_llr_pid_score_v->at(i_b)
+			 <<"\t \t"<<tmvaOutput
+                         <<"\t \t"<<tmvaOutput_pi
+			 <<"\t \t"<<trk_bragg_p_v->at(i_b) 
+  	  		 <<"\t \t"<<distance
+		 	 <<"\t \t"<<backtracked_pdg->at(i_b);
+                 if(i_b==muon_index) std::cout<<"\t muon"<<std::endl;
+		 else if(i_b==pion_index[0] || i_b==pion_index[1] || i_b==pion_index[2])  std::cout<<"\t pion"<<std::endl;
+		 else if(i_b==shower_index) std::cout<<"\t shower"<<std::endl;
+	         else std::cout<<"\t"<<std::endl;
+
+	 }
+
+
+
+	std::cin.get();
+
+}
+
+//        if(signal){  std::cout<<"Signal event"<<std::endl;}
+
+
+
+	  //Filling histograms for all variables and cuts for signal and background
+	  for(int c=0; c<ncuts; c++){
+             for(int i=0;i<2;i++){	
+	    int s=-1;
+	    if((i_f < 4) && signal ) s = 1;
+	    else if ((i_f <4) && !signal) s = 2;
+	    else if(i_f == 4) s = 3;//EXT
+	    else if(i_f == 5) s = 4;//Dirt
+	    else if(i_f == 6) s = 5;//Data
+	    else continue;
+
+            if(i==0) s=0;
+	    
+	    if (Cuts[c]){
+              if(s==2) Selected[c][s] += Scale[i_f]*ppfx_cv*weightTune;
+	     else      Selected[c][s] += Scale[i_f]*ppfx_cv*weightTune;
+
+	   //   std::cout<<ppfx_cv<<"\t"<<weightTune<<"\t"<<Selected[c][s]<<std::endl;
+	  //    std::cin.get();
+//	      std::cout<<CutsName[c]<<"\t"<<Sample[s]<<"\t"<<i_f<<"\t"<<  Scale[i_f]<<"\t"<<Selected[c][s]<<std::endl;
+	
+               
+	      if(i_f<4 && mc_pdg->at(0)==14) Histos[c][0][31]->Fill(mc_E->at(0), Scale[i_f]);
+              if(i_f<4 && mc_pdg->at(0)==12) Histos[c][0][32]->Fill(mc_E->at(0), Scale[i_f]);
+
+	      Histos[c][s][0]->Fill(topological_score,Scale[i_f]); //Variable[0]="Topological Score"; 
+     	
+	      if(muon_index!=-1) {
+		TVector3 muon_start (trk_sce_start_x_v->at(muon_index),trk_sce_start_y_v->at(muon_index),trk_sce_start_z_v->at(muon_index));
+		TVector3 nu_to_track_dist (muon_start - reco_primary_vtx);
+
+		Histos[c][s][1]->Fill(trk_len_v->at(muon_index),Scale[i_f] ); //Variable[1]="Muon track length";
+		Histos[c][s][4]->Fill(trk_llr_pid_score_v->at(muon_index), Scale[i_f] );//  Variable[4]="Muon PID";
+		Histos[c][s][6]->Fill(nu_to_track_dist.Mag(), Scale[i_f]); //Variable[6]="MuonVtxDistance";
+		Histos[c][s][9]->Fill(pfnplanehits_U->at(muon_index), Scale[i_f]);  //Variable[9]="MuonUPlaneHits";
+		Histos[c][s][10]->Fill(pfnplanehits_Y->at(muon_index), Scale[i_f]); //Variable[10]="MuonYPlaneHits";
+		Histos[c][s][11]->Fill(pfnplanehits_V->at(muon_index), Scale[i_f]); //Variable[11]="MuonVPlaneHits";
+
+		float tmvaOutput_mip = 0.0;
+
+		int i_a=muon_index;
+		trk_bragg_p_v_tmva = trk_bragg_p_v->at(i_a);
+		trk_bragg_mu_v_tmva = trk_bragg_mu_v->at(i_a);
+		trk_bragg_mip_v_tmva = trk_bragg_mip_v->at(i_a);
+		trk_llr_pid_score_v_tmva = trk_llr_pid_score_v->at(i_a);
+		trk_score_v_tmva = trk_score_v->at(i_a);
+		trk_len_v_tmva = trk_len_v->at(i_a);
+		trk_sce_end_x_v_tmva = trk_sce_end_x_v->at(i_a);
+		trk_sce_end_y_v_tmva = trk_sce_end_y_v->at(i_a);
+		trk_sce_end_z_v_tmva = trk_sce_end_z_v->at(i_a);
+		tmvaOutput_mip = tmvaReader->EvaluateMVA("BDT");
+
+		Histos[c][s][23]->Fill(tmvaOutput_mip, Scale[i_f] );  //Variable[23]="PionTMVAMip";
+
+	        Histos[c][s][26]->Fill(trk_range_muon_mom_v->at(muon_index), Scale[i_f]);       
+	        Histos[c][s][27]->Fill(trk_mcs_muon_mom_v->at(muon_index), Scale[i_f]);
+
+		//trk_mcs_muon_mom_v;
+        	//trk_range_muon_mom_v;
+		//
+	        TVector3 dir(trk_dir_x_v->at(muon_index),trk_dir_y_v->at(muon_index),trk_dir_z_v->at(muon_index));
+                Histos[c][s][34]->Fill(dir.Theta(),Scale[i_f]);
+                Histos[c][s][35]->Fill(dir.CosTheta(),Scale[i_f]);
+                Histos[c][s][36]->Fill(dir.Phi(),Scale[i_f]);
+
+
+		Histos[c][s][43]->Fill(trk_sce_start_x_v->at(muon_index), Scale[i_f]);
+                Histos[c][s][44]->Fill(trk_sce_start_y_v->at(muon_index), Scale[i_f]);
+                Histos[c][s][45]->Fill(trk_sce_start_z_v->at(muon_index), Scale[i_f]);
+
+
+	      }
+
+	      if(pion_index[0]!=-1) {
+		
+		int pi=pion_index[0];
+		TVector3 pion_start (trk_sce_start_x_v->at(pi),trk_sce_start_y_v->at(pi),trk_sce_start_z_v->at(pi));
+		TVector3 nu_to_track_dist (pion_start - reco_primary_vtx);
+
+		Histos[c][s][2]->Fill(trk_len_v->at(pi), Scale[i_f]);//  Variable[2]="Pion track length";
+		Histos[c][s][5]->Fill(trk_llr_pid_score_v->at(pi),Scale[i_f] );//  Variable[5]="Pion PID";
+		Histos[c][s][7]->Fill(nu_to_track_dist.Mag(),Scale[i_f]); //Variable[7]="PionVtxDistance";
+		Histos[c][s][12]->Fill(pfnplanehits_U->at(pi),Scale[i_f]);  //Variable[12]="PionUPlaneHits";
+		Histos[c][s][13]->Fill(pfnplanehits_Y->at(pi),Scale[i_f]);  //Variable[13]="PionYPlaneHits";
+		Histos[c][s][14]->Fill(pfnplanehits_V->at(pi),Scale[i_f]);  //Variable[14]="PionVPlaneHits";
+		float tmvaOutput = 0.0;
+		float tmvaOutput_pi = 0.0;
+		int i_b=pi;
+		trk_bragg_p_v_tmva = trk_bragg_p_v->at(i_b);
+		trk_bragg_mu_v_tmva = trk_bragg_mu_v->at(i_b);
+		trk_bragg_mip_v_tmva = trk_bragg_mip_v->at(i_b);
+		trk_llr_pid_score_v_tmva = trk_llr_pid_score_v->at(i_b);
+		trk_score_v_tmva = trk_score_v->at(i_b);
+		trk_len_v_tmva = trk_len_v->at(i_b);
+		trk_sce_end_x_v_tmva = trk_sce_end_x_v->at(i_b);
+		trk_sce_end_y_v_tmva = trk_sce_end_y_v->at(i_b);
+		trk_sce_end_z_v_tmva = trk_sce_end_z_v->at(i_b);
+		tmvaOutput = tmvaReader->EvaluateMVA("BDT");
+
+
+		trk_bragg_p_v_tmva_pi = trk_bragg_p_v->at(i_b);
+		trk_bragg_mu_v_tmva_pi = trk_bragg_mu_v->at(i_b);
+		trk_bragg_mip_v_tmva_pi = trk_bragg_mip_v->at(i_b);
+		trk_llr_pid_score_v_tmva_pi = trk_llr_pid_score_v->at(i_b);
+		trk_score_v_tmva_pi = trk_score_v->at(i_b);
+		trk_len_v_tmva_pi = trk_len_v->at(i_b);
+		trk_sce_end_x_v_tmva_pi = trk_sce_end_x_v->at(i_b);
+		trk_sce_end_y_v_tmva_pi = trk_sce_end_y_v->at(i_b);
+		trk_sce_end_z_v_tmva_pi = trk_sce_end_z_v->at(i_b);
+		tmvaOutput_pi = tmvaReader_pi->EvaluateMVA("BDT");
+
+
+		Histos[c][s][21]->Fill(tmvaOutput,Scale[i_f] );  //Variable[21]="PionTMVAMip";
+		Histos[c][s][22]->Fill(tmvaOutput_pi,Scale[i_f] );  //Variable[22]="PionTMVAPi";
+  	        Histos[c][s][24]->Fill(trk_range_muon_mom_v->at(pi), Scale[i_f]);
+                Histos[c][s][25]->Fill(trk_mcs_muon_mom_v->at(pi), Scale[i_f]);
+
+                TVector3 dir(trk_dir_x_v->at(pi),trk_dir_y_v->at(pi),trk_dir_z_v->at(pi));
+                Histos[c][s][37]->Fill(dir.Theta(),Scale[i_f]);
+		Histos[c][s][38]->Fill(dir.CosTheta(),Scale[i_f]);
+                Histos[c][s][39]->Fill(dir.Phi(),Scale[i_f]);
+
+
+                Histos[c][s][46]->Fill(trk_sce_start_x_v->at(pi), Scale[i_f]);
+                Histos[c][s][47]->Fill(trk_sce_start_y_v->at(pi), Scale[i_f]);
+                Histos[c][s][48]->Fill(trk_sce_start_z_v->at(pi), Scale[i_f]);
+
+
+
+	      }
+	
+            if(pion_index[1]!=-1) {
+		    
+                int pi=pion_index[1];
+		//std::cout<<pion_index[0]<<"\t"<<pion_index[1]<<std::endl;
+                TVector3 pion_start (trk_sce_start_x_v->at(pi),trk_sce_start_y_v->at(pi),trk_sce_start_z_v->at(pi));
+                TVector3 nu_to_track_dist (pion_start - reco_primary_vtx);
+
+                Histos[c][s][49]->Fill(trk_len_v->at(pi), Scale[i_f]);
+                Histos[c][s][50]->Fill(trk_llr_pid_score_v->at(pi),Scale[i_f] );
+                Histos[c][s][51]->Fill(nu_to_track_dist.Mag(),Scale[i_f]); 
+                Histos[c][s][53]->Fill(pfnplanehits_U->at(pi),Scale[i_f]); 
+                Histos[c][s][54]->Fill(pfnplanehits_Y->at(pi),Scale[i_f]);  
+                Histos[c][s][55]->Fill(pfnplanehits_V->at(pi),Scale[i_f]); 
+
+                float tmvaOutput = 0.0;
+                float tmvaOutput_pi = 0.0;
+                int i_b=pi;
+                trk_bragg_p_v_tmva = trk_bragg_p_v->at(i_b);
+                trk_bragg_mu_v_tmva = trk_bragg_mu_v->at(i_b);
+                trk_bragg_mip_v_tmva = trk_bragg_mip_v->at(i_b);
+                trk_llr_pid_score_v_tmva = trk_llr_pid_score_v->at(i_b);
+                trk_score_v_tmva = trk_score_v->at(i_b);
+                trk_len_v_tmva = trk_len_v->at(i_b);
+                trk_sce_end_x_v_tmva = trk_sce_end_x_v->at(i_b);
+                trk_sce_end_y_v_tmva = trk_sce_end_y_v->at(i_b);
+                trk_sce_end_z_v_tmva = trk_sce_end_z_v->at(i_b);
+                tmvaOutput = tmvaReader->EvaluateMVA("BDT");
+
+                trk_bragg_p_v_tmva_pi = trk_bragg_p_v->at(i_b);
+                trk_bragg_mu_v_tmva_pi = trk_bragg_mu_v->at(i_b);
+                trk_bragg_mip_v_tmva_pi = trk_bragg_mip_v->at(i_b);
+                trk_llr_pid_score_v_tmva_pi = trk_llr_pid_score_v->at(i_b);
+                trk_score_v_tmva_pi = trk_score_v->at(i_b);
+                trk_len_v_tmva_pi = trk_len_v->at(i_b);
+                trk_sce_end_x_v_tmva_pi = trk_sce_end_x_v->at(i_b);
+                trk_sce_end_y_v_tmva_pi = trk_sce_end_y_v->at(i_b);
+                trk_sce_end_z_v_tmva_pi = trk_sce_end_z_v->at(i_b);
+                tmvaOutput_pi = tmvaReader_pi->EvaluateMVA("BDT");
+
+                Histos[c][s][56]->Fill(tmvaOutput,Scale[i_f] );  //Variable[21]="PionTMVAMip";
+                Histos[c][s][57]->Fill(tmvaOutput_pi,Scale[i_f] );  //Variable[22]="PionTMVAPi";
+                Histos[c][s][58]->Fill(trk_range_muon_mom_v->at(pi), Scale[i_f]);
+                Histos[c][s][59]->Fill(trk_mcs_muon_mom_v->at(pi), Scale[i_f]);
+
+                TVector3 dir(trk_dir_x_v->at(pi),trk_dir_y_v->at(pi),trk_dir_z_v->at(pi));
+                Histos[c][s][60]->Fill(dir.Theta(),Scale[i_f]);
+                Histos[c][s][61]->Fill(dir.CosTheta(),Scale[i_f]);
+                Histos[c][s][62]->Fill(dir.Phi(),Scale[i_f]);
+
+                Histos[c][s][63]->Fill(trk_sce_start_x_v->at(pi), Scale[i_f]);
+                Histos[c][s][64]->Fill(trk_sce_start_y_v->at(pi), Scale[i_f]);
+                Histos[c][s][65]->Fill(trk_sce_start_z_v->at(pi), Scale[i_f]);
+
+              }
+
+
+     if(pion_index[2]!=-1) {
+
+                int pi=pion_index[2];
+                TVector3 pion_start (trk_sce_start_x_v->at(pi),trk_sce_start_y_v->at(pi),trk_sce_start_z_v->at(pi));
+                TVector3 nu_to_track_dist (pion_start - reco_primary_vtx);
+
+                Histos[c][s][66]->Fill(trk_len_v->at(pi), Scale[i_f]);
+                Histos[c][s][65]->Fill(trk_llr_pid_score_v->at(pi),Scale[i_f] );
+                Histos[c][s][68]->Fill(nu_to_track_dist.Mag(),Scale[i_f]);
+                Histos[c][s][70]->Fill(pfnplanehits_U->at(pi),Scale[i_f]);
+                Histos[c][s][71]->Fill(pfnplanehits_Y->at(pi),Scale[i_f]);
+                Histos[c][s][72]->Fill(pfnplanehits_V->at(pi),Scale[i_f]);
+
+                float tmvaOutput = 0.0;
+                float tmvaOutput_pi = 0.0;
+                int i_b=pi;
+                trk_bragg_p_v_tmva = trk_bragg_p_v->at(i_b);
+                trk_bragg_mu_v_tmva = trk_bragg_mu_v->at(i_b);
+                trk_bragg_mip_v_tmva = trk_bragg_mip_v->at(i_b);
+                trk_llr_pid_score_v_tmva = trk_llr_pid_score_v->at(i_b);
+                trk_score_v_tmva = trk_score_v->at(i_b);
+                trk_len_v_tmva = trk_len_v->at(i_b);
+                trk_sce_end_x_v_tmva = trk_sce_end_x_v->at(i_b);
+                trk_sce_end_y_v_tmva = trk_sce_end_y_v->at(i_b);
+                trk_sce_end_z_v_tmva = trk_sce_end_z_v->at(i_b);
+                tmvaOutput = tmvaReader->EvaluateMVA("BDT");
+
+                trk_bragg_p_v_tmva_pi = trk_bragg_p_v->at(i_b);
+                trk_bragg_mu_v_tmva_pi = trk_bragg_mu_v->at(i_b);
+                trk_bragg_mip_v_tmva_pi = trk_bragg_mip_v->at(i_b);
+                trk_llr_pid_score_v_tmva_pi = trk_llr_pid_score_v->at(i_b);
+                trk_score_v_tmva_pi = trk_score_v->at(i_b);
+                trk_len_v_tmva_pi = trk_len_v->at(i_b);
+                trk_sce_end_x_v_tmva_pi = trk_sce_end_x_v->at(i_b);
+                trk_sce_end_y_v_tmva_pi = trk_sce_end_y_v->at(i_b);
+                trk_sce_end_z_v_tmva_pi = trk_sce_end_z_v->at(i_b);
+                tmvaOutput_pi = tmvaReader_pi->EvaluateMVA("BDT");
+
+                Histos[c][s][73]->Fill(tmvaOutput,Scale[i_f] );  //Variable[21]="PionTMVAMip";
+                Histos[c][s][74]->Fill(tmvaOutput_pi,Scale[i_f] );  //Variable[22]="PionTMVAPi";
+                Histos[c][s][75]->Fill(trk_range_muon_mom_v->at(pi), Scale[i_f]);
+                Histos[c][s][76]->Fill(trk_mcs_muon_mom_v->at(pi), Scale[i_f]);
+
+                TVector3 dir(trk_dir_x_v->at(pi),trk_dir_y_v->at(pi),trk_dir_z_v->at(pi));
+                Histos[c][s][77]->Fill(dir.Theta(),Scale[i_f]);
+                Histos[c][s][78]->Fill(dir.CosTheta(),Scale[i_f]);
+                Histos[c][s][79]->Fill(dir.Phi(),Scale[i_f]);
+
+                Histos[c][s][80]->Fill(trk_sce_start_x_v->at(pi), Scale[i_f]);
+                Histos[c][s][81]->Fill(trk_sce_start_y_v->at(pi), Scale[i_f]);
+                Histos[c][s][82]->Fill(trk_sce_start_z_v->at(pi), Scale[i_f]);
+
+              }
+
+
+
+
+
+
+	      if((muon_index!= -1) && (pion_index[0]!= -1) && (pion_index[1]!= -1)&& (pion_index[2]!= -1) ) {
+		TVector3 muon_start (trk_sce_start_x_v->at(muon_index),trk_sce_start_y_v->at(muon_index),trk_sce_start_z_v->at(muon_index));
+		TVector3 pion_start (trk_sce_start_x_v->at(pion_index[0]),trk_sce_start_y_v->at(pion_index[0]),trk_sce_start_z_v->at(pion_index[0]));
+
+		TVector3 pion_muon_dist (muon_start - pion_start);
+
+
+		Histos[c][s][3]->Fill(mu_pi_opening_angle,Scale[i_f]);//  Variable[3]="Mu-Pi Opening angle";
+		Histos[c][s][8]->Fill(pion_muon_dist.Mag(),Scale[i_f]); // Variable[8]="MuonPionDistance";
+
+
+
+
+	        TVector3 muon_track_start(trk_sce_start_x_v->at(muon_index),trk_sce_start_y_v->at(muon_index),trk_sce_start_z_v->at(muon_index));
+    		TVector3 pion1_track_start(trk_sce_start_x_v->at(pion_index[0]),trk_sce_start_y_v->at(pion_index[0]),trk_sce_start_z_v->at(pion_index[0]));
+                TVector3 pion2_track_start(trk_sce_start_x_v->at(pion_index[1]),trk_sce_start_y_v->at(pion_index[1]),trk_sce_start_z_v->at(pion_index[1]));
+                TVector3 pion3_track_start(trk_sce_start_x_v->at(pion_index[2]),trk_sce_start_y_v->at(pion_index[2]),trk_sce_start_z_v->at(pion_index[2]));
+
+		Histos[c][s][33]->Fill((muon_track_start-pion1_track_start).Mag(),Scale[i_f]);
+                Histos[c][s][52]->Fill((muon_track_start-pion2_track_start).Mag(),Scale[i_f]);
+                Histos[c][s][69]->Fill((muon_track_start-pion3_track_start).Mag(),Scale[i_f]);
+
+
+
+
+
+
+	      }
+	      if(shower_index !=-1){
+
+		TVector3 shower_start (trk_sce_start_x_v->at(shower_index),trk_sce_start_y_v->at(shower_index),trk_sce_start_z_v->at(shower_index));
+		TVector3 nu_to_shower_dist (shower_start - reco_primary_vtx);
+
+
+		Histos[c][s][15]->Fill(pfnplanehits_U->at(shower_index),Scale[i_f]);  //Variable[15]="ShowerUPlaneHits";
+		Histos[c][s][16]->Fill(pfnplanehits_Y->at(shower_index),Scale[i_f]);  //Variable[16]="ShowerYPlaneHits";
+		Histos[c][s][17]->Fill(pfnplanehits_V->at(shower_index),Scale[i_f]);  //Variable[17]="ShowerVPlaneHits";
+
+		Histos[c][s][20]->Fill(nu_to_shower_dist.Mag(),Scale[i_f]);// Variable[20]="ShowerVtxDistance";
+
+		TVector3 dir(trk_dir_x_v->at(shower_index),trk_dir_y_v->at(shower_index),trk_dir_z_v->at(shower_index));
+                Histos[c][s][40]->Fill(dir.Theta(),Scale[i_f]);
+                Histos[c][s][41]->Fill(dir.CosTheta(),Scale[i_f]);
+                Histos[c][s][42]->Fill(dir.Phi(),Scale[i_f]);
+
+
+	      }
+
+	      Histos[c][s][18]->Fill(nPrimaryShowers,Scale[i_f]); // Variable[18]="NPrimaryShowers";
+	      Histos[c][s][19]->Fill(nPrimaryTracks,Scale[i_f]); // Variable[19]="NPrimaryTracks";
+	
+  	      Histos[c][s][28]->Fill(mc_muon_momentum,Scale[i_f]);
+	      Histos[c][s][29]->Fill(mc_pion_momentum[0],Scale[i_f]);
+              Histos[c][s][30]->Fill(mc_opening_angle,Scale[i_f]);
+
+
+
+	    } 
+	     }
+	  }
+
+
+         
+
+
+	} //event loop
+
+      } //for files
+
+      output.close();
+
+
+      TFile *myfile = new TFile("histograms.root","RECREATE");
+      for(int c=0;c<ncuts;c++){
+        for(int v=0;v<nvariables;v++){
+	
+	  for(int s=0;s<nsamples;s++){
+
+	    Histos[c][s][v]->Write();
+	  }
+        }
+      }
+
+
+
+	std::cout<< std::setprecision(1)<<std::fixed;
+
+      double purity = 0.0;
+      double efficiency = 0.0;
+      std::cout<<"test="<<test<<"\t \t \t signal  \t \t bckg \t  \t EXT \t   \t Dirt \t  \t DATA \t \t efficiency \t purity \t eff*pur\n";
+      for(int c=0; c<ncuts;c++){
+
+	double purity = Selected[c][1]/double(Selected[c][1]+Selected[c][2] + Selected[c][3] +Selected[c][4] )*100 ;
+	double efficiency = Selected[c][1]/double(Selected[0][1])*100;
+
+	std::cout<<CutsName[c]<<"\t \t \t &"<<Selected[c][1]
+		 <<"\t \t &"<<Selected[c][2]
+		 <<"\t \t &"<<Selected[c][3]
+		 <<"\t \t &"<<Selected[c][4]
+		 <<"\t \t &"<<Selected[c][5]
+		 <<"\t\t\t&"<<efficiency
+		 <<"\t \t &"<<purity
+		 <<"\t\t\t&"<<efficiency*purity<<"\\ "
+		 << std::endl;
+        
+      }
+
+      TString directory = "plots3pions/";
+
+      TCanvas *c1 = new TCanvas("c1","",1600,1200);
+      c1->Divide(4,3);
+
+      TLegend *l1= new TLegend(0.1,0.7,0.3,0.9);
+	l1->SetHeader("Samples");
+	for(int s=0;s<nsamples;s++)
+	l1->AddEntry(Histos[0][s][0], Sample[s]);
+
+
+      for(int i = 0; i<nvariables; i++){
+	for(int c=0;c<ncuts;c++){
+
+	  c1->cd(c+1);
+
+	  /* Histos[c][5][i]->Add(Histos[c][0][i]);
+	     Histos[c][5][i]->Add(Histos[c][1][i]);
+	     Histos[c][5][i]->Add(Histos[c][2][i]);
+	     Histos[c][5][i]->Add(Histos[c][3][i]);
+	  */
+
+        
+//	  Histos[c][0][i]->Draw();
+          Histos[c][2][i]->Draw();
+	  Histos[c][1][i]->Draw("same");
+	  Histos[c][3][i]->Draw("same");
+	  Histos[c][4][i]->Draw("same");
+	  //Histos[c][5][i]->Draw("same");
+	  // Histos[c][0][i]->Draw("same");
+
+        if(c+1==ncuts) l1->Draw();
+	}
+	c1->Print(directory+Variable[i]+".png");
+      }
+
+
+/*
+	 for(int i = 28; i<30; i++){
+            for(int c=1;c<ncuts;c++){
+        
+        
+          c1->cd(c+1);
+          
+
+          Histos[c][1][i]->Divide(Histos[0][1][i]);
+          Histos[c][1][i]->Draw();
+
+
+        }
+        c1->Print(directory+"Eff"+Variable[i]+".png");
+      }
+*/
+
+
+    }//TEST ENDi
+ 
+}
