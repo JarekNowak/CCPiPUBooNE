@@ -40,53 +40,53 @@ void cc3pi_analysis_jn(){            //first bracket
   TString Variable[nvariables];
   Variable[0]="TopologicalScore";
   Variable[1]="MuonTrackLength";
-  Variable[2]="PionTrackLength";
+  Variable[2]="Pion1TrackLength";
   Variable[3]="MuPiOpeningangle";
   Variable[4]="MuonPID";
-  Variable[5]="PionPID";
+  Variable[5]="Pion1PID";
   Variable[6]="MuonVtxDistance";
-  Variable[7]="PionVtxDistance";
-  Variable[8]="MuonPionDistance";
+  Variable[7]="Pion1VtxDistance";
+  Variable[8]="MuonPion1Distance";
   Variable[9]="MuonUPlaneHits";
   Variable[10]="MuonYPlaneHits";
   Variable[11]="MuonVPlaneHits";
-  Variable[12]="PionUPlaneHits";
-  Variable[13]="PionYPlaneHits";
-  Variable[14]="PionVPlaneHits";
+  Variable[12]="Pion1UPlaneHits";
+  Variable[13]="Pion1YPlaneHits";
+  Variable[14]="Pion1VPlaneHits";
   Variable[15]="ShowerUPlaneHits";
   Variable[16]="ShowerYPlaneHits";
   Variable[17]="ShowerVPlaneHits";
   Variable[18]="NPrimaryShowers";
   Variable[19]="NPrimaryTracks";
   Variable[20]="ShowerVtxDistance";
-  Variable[21]="PionTMVAMip";
-  Variable[22]="PionTMVAPi";
+  Variable[21]="Pion1TMVAMip";
+  Variable[22]="Pion1TMVAPi";
   Variable[23]="MuonTMVAMip";
-  Variable[24]="PionTrkMuonMom";
-  Variable[25]="PionMCSMuonMom";
+  Variable[24]="Pion1TrkMuonMom";
+  Variable[25]="Pion1MCSMuonMom";
   Variable[26]="MuonTrkMCSMom";
   Variable[27]="MuonMCSMuonMom";
   Variable[28]="MCMuonMomentum";
-  Variable[29]="MCPionMomentum";
+  Variable[29]="MCPion1Momentum";
   Variable[30]="MCOpeningAngle";
   Variable[31]="Nu_muMC_Eenergy";
   Variable[32]="Nu_eMC_Energy";
-  Variable[33]="MuToPiDistance";
+  Variable[33]="MuToPi1Distance";
   Variable[34]="MuonTheta";
   Variable[35]="MuonCosTheta";
   Variable[36]="MuonPhi";
-  Variable[37]="PionTheta";
-  Variable[38]="PionCosTheta";
-  Variable[39]="PionPhi";
+  Variable[37]="Pion1Theta";
+  Variable[38]="Pion1CosTheta";
+  Variable[39]="Pion1Phi";
   Variable[40]="ShowerTheta";
   Variable[41]="ShowerCosTheta";
   Variable[42]="ShowerPhi";
   Variable[43]="MuonStartX";
   Variable[44]="MuonStartY";
   Variable[45]="MuonStartZ";
-  Variable[46]="PionStartX";
-  Variable[47]="PionStartY";
-  Variable[48]="PionStartZ";
+  Variable[46]="Pion1StartX";
+  Variable[47]="Pion1StartY";
+  Variable[48]="Pion1StartZ";
 
 
   Variable[49]="Pion2TrackLength";
@@ -144,10 +144,13 @@ void cc3pi_analysis_jn(){            //first bracket
       for(int s=0;s<nsamples;s++){
 	
  
-	if(v<28 || v>32) Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",100,-1,-1);
-	else if(v<30)  Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",30,0,0.3);
+	if(v==33 || v==52 || v==69 ) Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",100,0,100);
+	else if(v==48 || v==65 || v==82 ) Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",100,0,200);
+
+//	else if(v<30)  Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",30,0,0.3);
 	else if(v==30) Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",180,0, 180);
 	else if(v==31 || v==32)  Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",100,-1,-1);
+	else Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",100,-1,-1);
 
 	if(s!=4) Histos[c][s][v] ->SetLineColor(s+1);
 	Histos[c][s][v] ->GetXaxis()->SetTitle(Variable[v]);
@@ -634,7 +637,7 @@ void cc3pi_analysis_jn(){            //first bracket
 
 	int tracknumber =0;
 
-	if(i_f==4) nentries =1000;
+//	if(i_f==4) nentries =1000;
 
 	std::cout<<"Number of Events="<<nentries<<std::endl;
 	for(int ientry=0;ientry<nentries;ientry++){
@@ -879,7 +882,6 @@ void cc3pi_analysis_jn(){            //first bracket
 		   &&  (tmvaOutput_mip >= -0.1)){
 
 
-		sel_has_muon_candidate = true;
 
 		if(muon_index == -1){
 		  muon_index = i_a;
@@ -894,6 +896,12 @@ void cc3pi_analysis_jn(){            //first bracket
 	  }
 
 	  if(muon_index != -1){
+
+		  TVector3 dir(trk_dir_x_v->at(muon_index),trk_dir_y_v->at(muon_index),trk_dir_z_v->at(muon_index));
+
+           if(dir.CosTheta()>0.5)      sel_has_muon_candidate = true;
+
+
 	    muon_in_gap = ((pfnplanehits_U->at(muon_index)>=1)&&
 			   (pfnplanehits_V->at(muon_index)>=1)&& (pfnplanehits_Y->at(muon_index)>=1));
 	  }
@@ -952,10 +960,11 @@ void cc3pi_analysis_jn(){            //first bracket
 	
 
 
-	      if (    (trk_llr_pid_score_v->at(i_b) > 0.1) 
+	      if (    (trk_llr_pid_score_v->at(i_b) > 0.1)
+	           && inFV(track_start_ib) 
 		 //  && (nu_to_track_dist_ib.Mag() < 4.0)
-		  // && (tmvaOutput    > -0.1) 
-		  // && (tmvaOutput_pi > -0.1)
+		   && (tmvaOutput    > -0.1) 
+		   && (tmvaOutput_pi > -0.1)
 //		   && (trk_len_v->at(i_b) > pion_trk_len) 
 		   ){
 
@@ -979,13 +988,23 @@ void cc3pi_analysis_jn(){            //first bracket
 
 
 
-	  if(pion_index[0] != -1){
-            
-            
-	    pion_in_gap = ((pfnplanehits_U->at(pion_index[0])>0) && (pfnplanehits_V->at(pion_index[0])>0)&& (pfnplanehits_Y->at(pion_index[0])>0));
-	 //   TVector3 pion_endpoint(trk_sce_end_x_v->at(pion_index),trk_sce_end_y_v->at(pion_index),trk_sce_end_z_v->at(pion_index));
+	  if(pion_number==3 ){
+		  	
+  	  TVector3 track1_start (trk_sce_start_x_v->at(pion_index[0]),trk_sce_start_y_v->at(pion_index[0]),trk_sce_start_z_v->at(pion_index[0]));
+          TVector3 track2_start (trk_sce_start_x_v->at(pion_index[1]),trk_sce_start_y_v->at(pion_index[1]),trk_sce_start_z_v->at(pion_index[1]));
+          TVector3 track3_start (trk_sce_start_x_v->at(pion_index[2]),trk_sce_start_y_v->at(pion_index[2]),trk_sce_start_z_v->at(pion_index[2]));
 
-	    if ( /*(isContained(pion_endpoint)) && */pion_number==3 )	  sel_contained_pions = true;
+       
+    	 pion_in_gap = ((pfnplanehits_U->at(pion_index[0])>0) && (pfnplanehits_V->at(pion_index[0])>0)&& (pfnplanehits_Y->at(pion_index[0])>0)
+		      &&(pfnplanehits_U->at(pion_index[1])>0) && (pfnplanehits_V->at(pion_index[1])>0)&& (pfnplanehits_Y->at(pion_index[1])>0)
+		      &&(pfnplanehits_U->at(pion_index[2])>0) && (pfnplanehits_V->at(pion_index[2])>0)&& (pfnplanehits_Y->at(pion_index[2])>0) );
+
+
+
+//	    TVector3 pion_endpoint(trk_sce_end_x_v->at(pion_index),trk_sce_end_y_v->at(pion_index),trk_sce_end_z_v->at(pion_index));
+
+//	    if ( (isContained(pion_endpoint)  )	 
+	  sel_contained_pions = true;
    
 	  }
 
@@ -1053,7 +1072,7 @@ void cc3pi_analysis_jn(){            //first bracket
 	  Cuts[5] = Cuts[4] && sel_contained_pions; //Contained charged pion
 	  Cuts[6] = Cuts[5] && muon_in_gap;
 	  Cuts[7] = Cuts[6] && pion_in_gap;
-	  Cuts[8] = Cuts[7];// && shower_cut; //no or one shower with conditions
+	  Cuts[8] = Cuts[7] && (nPrimaryShowers<2) && (nPrimaryTracks<8) ;// && shower_cut; //no or one shower with conditions
 	  Cuts[9] = Cuts[8] && muon_to_pion_distance_cut; //muon-pion distance 
 	  Cuts[10]= Cuts[9] && (nonproton < 10); // no other charged pions
 
@@ -1069,7 +1088,7 @@ void cc3pi_analysis_jn(){            //first bracket
 
 bool show =0; //change to 0 to suppress the text and 1 to show it
 
-if(Cuts[2]==true && show && signal){
+if(Cuts[4]==true && Cuts[5]==false &&  show && signal){
 
 	if(signal)  std::cout<<"Signal event: "<<ientry<< std::endl;
         if(!signal) std::cout<<"Background event: "<<ientry<<std::endl;
@@ -1341,7 +1360,7 @@ if(Cuts[2]==true && show && signal){
                 TVector3 nu_to_track_dist (pion_start - reco_primary_vtx);
 
                 Histos[c][s][66]->Fill(trk_len_v->at(pi), Scale[i_f]);
-                Histos[c][s][65]->Fill(trk_llr_pid_score_v->at(pi),Scale[i_f] );
+                Histos[c][s][67]->Fill(trk_llr_pid_score_v->at(pi),Scale[i_f] );
                 Histos[c][s][68]->Fill(nu_to_track_dist.Mag(),Scale[i_f]);
                 Histos[c][s][70]->Fill(pfnplanehits_U->at(pi),Scale[i_f]);
                 Histos[c][s][71]->Fill(pfnplanehits_Y->at(pi),Scale[i_f]);
