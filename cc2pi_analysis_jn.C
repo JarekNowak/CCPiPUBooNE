@@ -13,7 +13,7 @@
 
 
 
-void cc3pi_analysis_jn(){            //first bracket
+void cc2pi_analysis_jn(){            //first bracket
 
   const int ncuts=11;
   double Selected[ncuts][6]={0};
@@ -743,9 +743,9 @@ void cc3pi_analysis_jn(){            //first bracket
 
 						
 	    if( (in_fiducial_volume_true) 
-	        && (nmuons==1) && (npionszero==0) &&  (npions== 3) && (nkaons==0) 
+	        && (nmuons==1) && (npionszero==0) &&  (npions== 2) && (nkaons==0) 
 	        && (abs(nu_pdg) == 14) 
-	        && (mc_muon_momentum>0.1) && (mc_pion_momentum[0]>0.1) && (mc_pion_momentum[1]>0.1)&& (mc_pion_momentum[2]>0.1)
+	        && (mc_muon_momentum>0.1) && (mc_pion_momentum[0]>0.1) && (mc_pion_momentum[1]>0.1)
 //		&& (mc_opening_angle *180.0/3.14< 150)
 	      )
 	      {
@@ -988,16 +988,15 @@ void cc3pi_analysis_jn(){            //first bracket
 
 
 
-	  if(pion_number==3 ){
+	  if(pion_number== 2 ){
 		  	
   	  TVector3 track1_start (trk_sce_start_x_v->at(pion_index[0]),trk_sce_start_y_v->at(pion_index[0]),trk_sce_start_z_v->at(pion_index[0]));
           TVector3 track2_start (trk_sce_start_x_v->at(pion_index[1]),trk_sce_start_y_v->at(pion_index[1]),trk_sce_start_z_v->at(pion_index[1]));
-          TVector3 track3_start (trk_sce_start_x_v->at(pion_index[2]),trk_sce_start_y_v->at(pion_index[2]),trk_sce_start_z_v->at(pion_index[2]));
 
        
     	 pion_in_gap = ((pfnplanehits_U->at(pion_index[0])>0) && (pfnplanehits_V->at(pion_index[0])>0)&& (pfnplanehits_Y->at(pion_index[0])>0)
 		      &&(pfnplanehits_U->at(pion_index[1])>0) && (pfnplanehits_V->at(pion_index[1])>0)&& (pfnplanehits_Y->at(pion_index[1])>0)
-		      &&(pfnplanehits_U->at(pion_index[2])>0) && (pfnplanehits_V->at(pion_index[2])>0)&& (pfnplanehits_Y->at(pion_index[2])>0) );
+		       );
 
 
 
@@ -1014,7 +1013,7 @@ void cc3pi_analysis_jn(){            //first bracket
 	  bool opening_angle_cut=false;
 	  bool muon_to_pion_distance_cut=false;
 
-	  if((muon_index!= -1) && (pion_index[0]!= -1) && (pion_index[1]!= -1)&& (pion_index[2]!= -1) ){
+	  if((muon_index!= -1) && (pion_index[0]!= -1) && (pion_index[1]!= -1) ){
 	    TVector3 MU(trk_dir_x_v->at(muon_index),trk_dir_y_v->at(muon_index),trk_dir_z_v->at(muon_index));
 	    TVector3 PI(trk_dir_x_v->at(pion_index[0]),trk_dir_y_v->at(pion_index[0]),trk_dir_z_v->at(pion_index[0]));
 	    mu_pi_opening_angle = MU.Angle(PI);
@@ -1023,13 +1022,11 @@ void cc3pi_analysis_jn(){            //first bracket
 		 TVector3 muon_track_start(trk_sce_start_x_v->at(muon_index),trk_sce_start_y_v->at(muon_index),trk_sce_start_z_v->at(muon_index));
                 TVector3 pion1_track_start(trk_sce_start_x_v->at(pion_index[0]),trk_sce_start_y_v->at(pion_index[0]),trk_sce_start_z_v->at(pion_index[0]));
                 TVector3 pion2_track_start(trk_sce_start_x_v->at(pion_index[1]),trk_sce_start_y_v->at(pion_index[1]),trk_sce_start_z_v->at(pion_index[1]));
-                TVector3 pion3_track_start(trk_sce_start_x_v->at(pion_index[2]),trk_sce_start_y_v->at(pion_index[2]),trk_sce_start_z_v->at(pion_index[2]));
 
                 double mupi1dis = (muon_track_start-pion1_track_start).Mag();
                 double mupi2dis = (muon_track_start-pion2_track_start).Mag();
-                double mupi3dis = (muon_track_start-pion3_track_start).Mag();
 
-		if (mupi1dis < 10 && mupi2dis <10 && mupi3dis<10 ) muon_to_pion_distance_cut=true;
+		if (mupi1dis < 10 && mupi2dis <10 ) muon_to_pion_distance_cut=true;
 
 
 	  }

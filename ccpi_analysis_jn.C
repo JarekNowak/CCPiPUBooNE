@@ -1,5 +1,5 @@
 #include "TFile.h"
-#include "FV.h"
+#include "FV_new.h"
 #include "TVector2.h"
 #include "TVector3.h"
 #include <iostream>
@@ -23,7 +23,7 @@ void ccpi_analysis_jn(){            //first bracket
 
   TString CutsName[ncuts];
   CutsName[0]="EventsInTrueFV";
-  CutsName[1]="FlashMatching";
+  CutsName[1]="NeutrinoSlice";
   CutsName[2]="InFiducialVol";
   CutsName[3]="Topological";
   CutsName[4]="MuonCandidate";
@@ -92,14 +92,14 @@ void ccpi_analysis_jn(){            //first bracket
 
 
 
-  const int nsamples =6;
+  const int nsamples = 6;
   TString Sample[nsamples];
-  Sample[0]="Signal";
-  Sample[1]="Background";
-  Sample[2]="EXT";
-  Sample[3]="OOFV";
-  Sample[4]="Data";
-  Sample[5]="MC";
+  Sample[0]="AllMC";
+  Sample[1]="Signal";
+  Sample[2]="Background";
+  Sample[3]="EXT";
+  Sample[4]="OOFV";
+  Sample[5]="Data";
 
   TH1F *Histos[ncuts][nsamples][nvariables];
 
@@ -109,7 +109,7 @@ void ccpi_analysis_jn(){            //first bracket
 	
  
 	if(v<28 || v>32) Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",100,-1,-1);
-	else if(v<30)  Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",20,0,0.5);
+	else if(v<30)  Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",30,0,0.3);
 	else if(v==30) Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",180,0, 180);
 	else if(v==31 || v==32)  Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",100,-1,-1);
 
@@ -154,7 +154,7 @@ void ccpi_analysis_jn(){            //first bracket
 
 
   double dataPoT[4] ={0};   // in e+20 PoT
-  dataPoT[0] = 2.192+3.283; //Run1 inclusind open trigger  
+  dataPoT[0] = 3.283; //Run1 inclusind open trigger  
   dataPoT[1] = 1.268;  //Run2 
   dataPoT[2] = 2.075;  //Run4
   dataPoT[3] = 2.231;  //Run5
@@ -618,7 +618,7 @@ void ccpi_analysis_jn(){            //first bracket
 	  double muon_trk_start_dist =  4.0; //cm
 	  double muon_trk_len = 10; //cm
 	  double muon_pid_score = 0.2;
-	  double topo_cut = 0.94;//0.67;
+	  double topo_cut = 0.67;//0.94;//0.67;
           double pion_trk_len = 20; //cm
 
 	  bool pion_in_gap = false;
@@ -999,7 +999,7 @@ void ccpi_analysis_jn(){            //first bracket
 	  Cuts[7] = Cuts[6] && pion_in_gap;
 	  Cuts[8] = Cuts[7] && shower_cut; //no or one shower with conditions
 	  Cuts[9] = Cuts[8] && opening_angle_cut; //muon-pion opening angle cut 
-	  Cuts[10]= Cuts[9] && (nonproton < 4); // no other charged pions
+	  Cuts[10]= Cuts[9] && (nonproton < 4) && (nPrimaryTracks <5); // no other charged pions
 
 ///sanity check for the weights
 
@@ -1089,16 +1089,16 @@ if(Cuts[10]==true && show){
 
 	  //Filling histograms for all variables and cuts for signal and background
 	  for(int c=0; c<ncuts; c++){
-	
+             for(int i=0;i<2;i++){	
 	    int s=-1;
-	    if((i_f < 4) && signal ) s = 0;
-	    else if ((i_f <4) && !signal) s = 1;
-	    else if(i_f == 4) s = 2;//EXT
-	    else if(i_f == 5) s = 3;//Dirt
-	    else if(i_f == 6) s = 4;//Data
+	    if((i_f < 4) && signal ) s = 1;
+	    else if ((i_f <4) && !signal) s = 2;
+	    else if(i_f == 4) s = 3;//EXT
+	    else if(i_f == 5) s = 4;//Dirt
+	    else if(i_f == 6) s = 5;//Data
 	    else continue;
 
-
+            if(i==0) s=0;
 	    
 	    if (Cuts[c]){
 
@@ -1143,12 +1143,6 @@ if(Cuts[10]==true && show){
 	        Histos[c][s][26]->Fill(trk_range_muon_mom_v->at(muon_index), Scale[i_f]);       
 	        Histos[c][s][27]->Fill(trk_mcs_muon_mom_v->at(muon_index), Scale[i_f]);
 
-	/*
-		Variable[24]="PionTrkMuonMom";
-  Variable[25]="PionTrkMuonMom";
-  Variable[26]="MuonTrkMCSMom";
-  Variable[27]="PionTrkMCSnMom";
-*/
 		//trk_mcs_muon_mom_v;
         	//trk_range_muon_mom_v;
 		//
@@ -1271,10 +1265,11 @@ if(Cuts[10]==true && show){
 
 
 	    } 
+	     }
 	  }
 
 
-
+         
 
 
 	} //event loop
@@ -1297,24 +1292,24 @@ if(Cuts[10]==true && show){
 
 
 
-
+	std::cout<< std::setprecision(1)<<std::fixed;
 
       double purity = 0.0;
       double efficiency = 0.0;
       std::cout<<"test="<<test<<"\t \t \t signal  \t \t bckg \t  \t EXT \t   \t Dirt \t  \t DATA \t \t efficiency \t purity \t eff*pur\n";
       for(int c=0; c<ncuts;c++){
 
-	double purity = Selected[c][0]/double(Selected[c][0]+Selected[c][1] + Selected[c][2] +Selected[c][3] )*100 ;
-	double efficiency = Selected[c][0]/double(Selected[0][0])*100;
+	double purity = Selected[c][1]/double(Selected[c][1]+Selected[c][2] + Selected[c][3] +Selected[c][4] )*100 ;
+	double efficiency = Selected[c][1]/double(Selected[0][1])*100;
 
-	std::cout<<CutsName[c]<<"\t \t \t "<<Selected[c][0]
-		 <<"\t \t "<<Selected[c][1]
-		 <<"\t \t "<<Selected[c][2]
-		 <<"\t \t "<<Selected[c][3]
-		 <<"\t \t "<<Selected[c][4]
-		 <<"\t\t\t"<<efficiency
-		 <<"\t \t "<<purity
-		 <<"\t\t\t"<<efficiency*purity
+	std::cout<<CutsName[c]<<"\t \t \t &"<<Selected[c][1]
+		 <<"\t \t &"<<Selected[c][2]
+		 <<"\t \t &"<<Selected[c][3]
+		 <<"\t \t &"<<Selected[c][4]
+		 <<"\t \t &"<<Selected[c][5]
+		 <<"\t\t\t&"<<efficiency
+		 <<"\t \t &"<<purity
+		 <<"\t\t\t&"<<efficiency*purity<<"\\ "
 		 << std::endl;
         
       }
@@ -1323,6 +1318,12 @@ if(Cuts[10]==true && show){
 
       TCanvas *c1 = new TCanvas("c1","",2000,800);
       c1->Divide(5,2);
+
+      TLegend *l1= new TLegend(0.1,0.7,0.3,0.9);
+	l1->SetHeader("Samples");
+	for(int s=0;s<nsamples;s++)
+	l1->AddEntry(Histos[0][s][0], Sample[s]);
+
 
       for(int i = 0; i<nvariables; i++){
 	for(int c=0;c<ncuts;c++){
@@ -1335,15 +1336,16 @@ if(Cuts[10]==true && show){
 	     Histos[c][5][i]->Add(Histos[c][3][i]);
 	  */
 
-  
+        
 	  Histos[c][0][i]->Draw();
-	  Histos[c][1][i]->Draw("same");
+          Histos[c][1][i]->Draw("same");
 	  Histos[c][2][i]->Draw("same");
 	  Histos[c][3][i]->Draw("same");
-	  //Histos[c][4][i]->Draw("same");
+	  Histos[c][4][i]->Draw("same");
+	  //Histos[c][5][i]->Draw("same");
 	  // Histos[c][0][i]->Draw("same");
 
-
+        if(c+1==ncuts) l1->Draw();
 	}
 	c1->Print(directory+Variable[i]+".png");
       }
@@ -1357,8 +1359,8 @@ if(Cuts[10]==true && show){
           c1->cd(c+1);
           
 
-          Histos[c][0][i]->Divide(Histos[0][0][i]);
-          Histos[c][0][i]->Draw();
+          Histos[c][1][i]->Divide(Histos[0][1][i]);
+          Histos[c][1][i]->Draw();
 
 
         }
@@ -1369,6 +1371,4 @@ if(Cuts[10]==true && show){
 
     }//TEST ENDi
  
-  std::cout<<"nu_mu="<<nu_mu<<std::endl;
-  std::cout<<"nu_e ="<<nu_e <<std::endl;
 }
