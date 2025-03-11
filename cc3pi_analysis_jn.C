@@ -27,10 +27,10 @@ void cc3pi_analysis_jn(){            //first bracket
   CutsName[2]="InFiducialVol";
   CutsName[3]="Topological";
   CutsName[4]="MuonCandidate";
-  CutsName[5]="ContainedPion";
+  CutsName[5]="PionsCandidates";
   CutsName[6]="MuonIn3Planes";
   CutsName[7]="PionIn3Planes";
-  CutsName[8]="ShowerCut";
+  CutsName[8]="nPrimaries";
   CutsName[9]="MuPiDistance";
   CutsName[10]="Nonprotons";
 
@@ -171,7 +171,7 @@ void cc3pi_analysis_jn(){            //first bracket
     ,"/data/uboone/new_numi_flux/Run5_fhc_new_numi_flux_fhc_pandora_ntuple.root"
     ,"/data/uboone/EXT/beamoff_run1Andrun3.root" //neutrinoselection_filt_run1_beamoff.root" // EXT beam off
     ,"/data/uboone/dirt/prodgenie_numi_uboone_overlay_dirt_fhc_mcc9_run1_v28_all_snapshot.root" // Dirt - the old numi flux
-    //,"/data/uboone/beam_on/neutrinoselection_filt_run1_beamon_beamgood.root" // Data - 
+  //  ,"/data/uboone/beam_on/neutrinoselection_filt_run1_beamon_beamgood.root" // Data - 
   };
 
   std::ofstream output("backtracked_showers.txt");
@@ -217,8 +217,8 @@ void cc3pi_analysis_jn(){            //first bracket
 
      
   Scale[5] = totalDataPoT/16.739;      // Run1 dirt from David 1.67392e+21
-  Scale[4]  = 7809962/(610496.0+3211097.0);// 5748692.0/9199232.0;  // Run1+Run3 beam off triggers scaling to beam on triggers
-
+  Scale[4] = 7809962/(610496.0+3211097.0);// 5748692.0/9199232.0;  // Run1+Run3 beam off triggers scaling to beam on triggers
+  Scale[6] = 1.0;
 
   double test_min=0.0;
   double test_max=1.0;
