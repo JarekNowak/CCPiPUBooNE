@@ -35,7 +35,7 @@ void ccpi_analysis_jn(){            //first bracket
   CutsName[10]="Nonprotons";
 
 
-  const int nvariables=49;
+  const int nvariables=60;
 
   TString Variable[nvariables];
   Variable[0]="TopologicalScore";
@@ -89,7 +89,20 @@ void ccpi_analysis_jn(){            //first bracket
   Variable[48]="PionStartZ";
 
 
+  Variable[49]="TrueMuonMomentum";
+  Variable[50]="TrueMuonCosTheta";
+  Variable[51]="TrueMuonTheta";
+  Variable[52]="TrueMuonPhi";
 
+  Variable[53]="TruePionMomentum";
+  Variable[54]="TruePionCosTheta";
+  Variable[55]="TruePionTheta";
+  Variable[56]="TruePionPhi";
+
+  Variable[57]="NuEnergy"; //true_nu_px
+  Variable[58]="Q2";
+  Variable[59]="W";
+  
 
 
   const int nsamples = 6;
@@ -107,25 +120,28 @@ void ccpi_analysis_jn(){            //first bracket
     for(int v=0;v<nvariables;v++){
       for(int s=0;s<nsamples;s++){
 	
- 
-	if(v<28 || v>32) Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",100,-1,-1);
-	else if(v<30)  Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",30,0,0.3);
-	else if(v==30) Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",180,0, 180);
-	else if(v==31 || v==32)  Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",100,-1,-1);
+	
+	if(v==30)      Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",180,0, 180);
+        else if(v==59) Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",100,0.9, 2.1);
+        else if(v==58) Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",100,0.0, 1.5);
+        else if(v==49) Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",100,0.0, 2.0);
+        else if(v==53) Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",100,0.0, 1.0);
+	else Histos[c][s][v] = new TH1F (Variable[v]+"_"+CutsName[c]+"_"+Sample[s],"",100,-1,-1);
 
+	
 	if(s!=4) Histos[c][s][v] ->SetLineColor(s+1);
 	Histos[c][s][v] ->GetXaxis()->SetTitle(Variable[v]);
 	Histos[c][s][v] ->SetTitle(CutsName[c]);
-
+	
       }
     }
   }
 
+  
+  
 
-
-
-
-
+  
+  
   std::vector<std::string> Files = {"/data/uboone/new_numi_flux/Run1_fhc_new_numi_flux_fhc_pandora_ntuple.root" // //MC overlay - new numi flux
     ,"/data/uboone/new_numi_flux/Run2_fhc_new_numi_flux_fhc_pandora_ntuple.root"
     ,"/data/uboone/new_numi_flux/Run4_fhc_new_numi_flux_fhc_pandora_ntuple.root"
@@ -136,8 +152,8 @@ void ccpi_analysis_jn(){            //first bracket
   };
 
   std::ofstream output("backtracked_showers.txt");
-
-
+  
+  
   //POTs and Trigger from Patrick
   //
   // Run 1 FHC: 2.192e+20 POT, 5748692.0 triggers
@@ -335,7 +351,7 @@ void ccpi_analysis_jn(){            //first bracket
 	tmvaReader->AddVariable("trk_bragg_mip_v", &trk_bragg_mip_v_tmva);
 	tmvaReader->AddVariable("trk_llr_pid_score_v", &trk_llr_pid_score_v_tmva);
 	tmvaReader->AddVariable("trk_score_v", &trk_score_v_tmva);
-//	tmvaReader->AddVariable("trk_len_v", &trk_len_v_tmva);
+	//	tmvaReader->AddVariable("trk_len_v", &trk_len_v_tmva);
 	tmvaReader->AddVariable("trk_sce_end_x_v", &trk_sce_end_x_v_tmva);
 	tmvaReader->AddVariable("trk_sce_end_y_v", &trk_sce_end_y_v_tmva);
 	tmvaReader->AddVariable("trk_sce_end_z_v", &trk_sce_end_z_v_tmva);
@@ -358,7 +374,7 @@ void ccpi_analysis_jn(){            //first bracket
 	tmvaReader_pi->AddVariable("trk_bragg_mip_v", &trk_bragg_mip_v_tmva_pi);
 	tmvaReader_pi->AddVariable("trk_llr_pid_score_v", &trk_llr_pid_score_v_tmva_pi);
 	tmvaReader_pi->AddVariable("trk_score_v", &trk_score_v_tmva_pi);
-//	tmvaReader_pi->AddVariable("trk_len_v", &trk_len_v_tmva_pi);
+	//	tmvaReader_pi->AddVariable("trk_len_v", &trk_len_v_tmva_pi);
 	tmvaReader_pi->AddVariable("trk_sce_end_x_v", &trk_sce_end_x_v_tmva_pi);
 	tmvaReader_pi->AddVariable("trk_sce_end_y_v", &trk_sce_end_y_v_tmva_pi);
 	tmvaReader_pi->AddVariable("trk_sce_end_z_v", &trk_sce_end_z_v_tmva_pi);
@@ -598,7 +614,7 @@ void ccpi_analysis_jn(){            //first bracket
 
 	int tracknumber =0;
 
-//	if(i_f<4) nentries =1000;
+//if(i_f>3) nentries =1000;
 
 	std::cout<<"Number of Events="<<nentries<<std::endl;
 	for(int ientry=0;ientry<nentries;ientry++){
@@ -626,8 +642,6 @@ void ccpi_analysis_jn(){            //first bracket
 	  int contained_pions = 0;
 	  bool sel_contained_pions = false;
 	  double mu_pi_opening_angle = 0.0;
-	  //double muon_is_correct = 0.0;
-	  //double sel_has_a_muon = 0.0;
 	  bool one_shower = false;
 	  bool plane_hits = false;
 	  bool mol_avg = false;
@@ -637,88 +651,88 @@ void ccpi_analysis_jn(){            //first bracket
 
 
 
-	  //      if(mc_pdg->size() == 0) continue;
 
 
 
 	  bool signal = false;
-
+	  
 	  bool in_fiducial_volume_true = false;  
-
+	  
 	  int nprotons=0, npions=0, nmuons=0, npionszero=0, npionsmin=0, nkaons=0;
 
           double mc_muon_momentum = -999.9;
 	  double mc_pion_momentum = -999.9;
 	  double mc_opening_angle = -999.9;
-
+	  
 	  if(mc_pdg->size() ) {
-	 
-		  TVector3 mc_muon_mom;
-              	  TVector3 mc_pion_mom;
-
-
+	    
+	    TVector3 mc_muon_mom;
+	    TVector3 mc_pion_mom;
+	    
+	    
 	    for(size_t i_mc=0; i_mc<mc_pdg->size();i_mc++){
-             // if(mc_pdg->at(i_mc)==14) std::cout<<i_mc<<"\t"<< mc_pdg->at(i_mc)<<"\t"<< mc_E->at(i_mc)<<std::endl;
+	      // if(mc_pdg->at(i_mc)==14) std::cout<<i_mc<<"\t"<< mc_pdg->at(i_mc)<<"\t"<< mc_E->at(i_mc)<<std::endl;
 	      if(mc_pdg->at(i_mc) == 2212)     nprotons++;
 	      if(abs(mc_pdg->at(i_mc)) == 13)  {
-		      nmuons++;
-		      mc_muon_mom.SetXYZ(mc_px->at(i_mc), mc_py->at(i_mc), mc_pz->at(i_mc));
-		      mc_muon_momentum=mc_muon_mom.Mag();
-	//	      std::cout<<"muon1=";    mc_muon_mom.Print();
-
+		nmuons++;
+		mc_muon_mom.SetXYZ(mc_px->at(i_mc), mc_py->at(i_mc), mc_pz->at(i_mc));
+		mc_muon_momentum=mc_muon_mom.Mag();
+		
+		//	      std::cout<<"muon1=";    mc_muon_mom.Print();
+		
 	      }
 	      if(abs(mc_pdg->at(i_mc)) == 211) {
-		      npions++;
-		      mc_pion_mom.SetXYZ(mc_px->at(i_mc), mc_py->at(i_mc), mc_pz->at(i_mc));
-		      mc_pion_momentum=mc_pion_mom.Mag();
-	//	      std::cout<<"pion="; mc_pion_mom.Print();
-
+		npions++;
+		mc_pion_mom.SetXYZ(mc_px->at(i_mc), mc_py->at(i_mc), mc_pz->at(i_mc));
+		mc_pion_momentum=mc_pion_mom.Mag();
+		//	      std::cout<<"pion="; mc_pion_mom.Print();
+		
 	      }
-
+	      
 	      if(mc_pdg->at(i_mc) == 111)   npionszero++;
-
+	      
 	      if( abs(mc_pdg->at(i_mc))==312  || mc_pdg->at(i_mc)==310 || mc_pdg->at(i_mc)==130 || mc_pdg->at(i_mc)==311 ) nkaons++;
-	       
+	      
 	    }
-
-
-	       if(nmuons==1 && npions==1){
-                      mc_opening_angle= mc_pion_mom.Angle(mc_muon_mom)*180.0/3.142;
-                     // mc_muon_mom.Print();
-                     // mc_pion_mom.Print();
-
-                     // std::cout<<mc_opening_angle<<"\t"<<mc_pion_momentum<<"\t"<<mc_muon_momentum<<std::endl;
-                }
-
-
-      
+	    
+	    
+	    if(nmuons==1 && npions==1){
+	      mc_opening_angle= mc_pion_mom.Angle(mc_muon_mom)*180.0/3.142;
+	      // mc_muon_mom.Print();
+	      // mc_pion_mom.Print();
+	      
+	      // std::cout<<mc_opening_angle<<"\t"<<mc_pion_momentum<<"\t"<<mc_muon_momentum<<std::endl;
+	    }
+	    
+	    
+	    
+	    
+	    
 	    TVector3 Reco_Vertex(reco_nu_vtx_sce_x,reco_nu_vtx_sce_y,reco_nu_vtx_sce_z);
 	    TVector3 true_vertex(mc_vx->at(0),mc_vy->at(0),mc_vz->at(0));
-
+	    
 	    in_fiducial_volume_true = inFV(true_vertex);		
 	    bool in_fiducial_volume_reco = inFV(Reco_Vertex);
-
-	 //  if(trk_ilen.size() > 0) flash_cut = true;
+	    
 	    //Signal definition
-	    //      bool signal = false;
-
+	    
 						
 	    if( (in_fiducial_volume_true) 
 	        && (nmuons==1) && (npionszero==0) &&  (npions== 1) && (nkaons==0) 
 	        && (abs(nu_pdg) == 14) 
 	        && (mc_muon_momentum>0.1) && (mc_pion_momentum>0.1)
-//		&& (mc_opening_angle *180.0/3.14< 150)
-	      )
+		//		&& (mc_opening_angle *180.0/3.14< 150)
+		)
 	      {
-	      signal = true;
-	    }
-
+		signal = true;
+	      }
+	    
 	  }
-
-        if (abs(nu_pdg)==14) nu_mu++;
-	if (abs(nu_pdg)==12) nu_e++;
-
-
+	  
+	  if (abs(nu_pdg)==14) nu_mu++;
+	  if (abs(nu_pdg)==12) nu_e++;
+	  
+	  
 	  //reconstructed staff
 	  
 	  
@@ -727,21 +741,17 @@ void ccpi_analysis_jn(){            //first bracket
 
 	  TVector3 Reco_Vertex(reco_nu_vtx_sce_x,reco_nu_vtx_sce_y,reco_nu_vtx_sce_z);
 	  bool in_fiducial_volume_reco = inFV(Reco_Vertex);
-
+	  
 
 	  //topological score 
 
 	  if(topological_score > topo_cut){
 	    sel_passed_topo_cut = true;
 	  }
-
-
+	  
+	  
 	  //end of topological score
-
-
-
-
-
+	  
 
 	  int uncontained = 0;
 	  int nonproton = 0;
@@ -750,33 +760,33 @@ void ccpi_analysis_jn(){            //first bracket
 	  std::vector<std::pair<int, float>> trk_llr_proto;
 	  std::vector<std::pair<int, float>> trk_ilen;
 
-           if(trk_len_v->size() > 0) flash_cut = true;
+	  if(trk_len_v->size() > 0) flash_cut = true;
 
 	  for(int i = 0; i< trk_len_v->size(); i++) {
 	    TVector3 endpoint(trk_sce_end_x_v->at(i),trk_sce_end_y_v->at(i),trk_sce_end_z_v->at(i));
 
 	    if(pfp_generation_v->at(i) !=2) continue;
-	
+	    
 	    if(trk_score_v->at(i) >= 0.5){
 	      nPrimaryTracks++;
 
 	      if(!isContained(endpoint) && (trk_len_v->at(i) > 0) )  uncontained++;
-
+	      
 	      if(trk_llr_pid_score_v->at(i) > 0.1  )  nonproton++;
-	
-
+	      
+	      
 	      trk_llr_proto.push_back({i, trk_llr_pid_score_v->at(i)});
 	      trk_ilen.push_back({i, trk_len_v->at(i)});
-
+	      
 	    }
 	    else{
 	      nPrimaryShowers++;
 	      shower_index = i;
 	    }
-	
+	    
 	  }
-
-
+	  
+	  
 
 	  std::sort(trk_llr_proto.begin(), trk_llr_proto.end(), [](std::pair<int, float> a, std::pair<int, float> b) {
 	    return a.second > b.second;
@@ -803,10 +813,10 @@ void ccpi_analysis_jn(){            //first bracket
 	    track_start = TVector3 (trk_sce_start_x_v->at(i_max_len),trk_sce_start_y_v->at(i_max_len),trk_sce_start_z_v->at(i_max_len));
 	    nu_to_track_dist = TVector3 (track_start - reco_primary_vtx);
 	  }
-
-
+	  
+	  
 	  for(size_t i_a = 0; i_a < trk_len_v->size(); i_a++){
-
+	    
 
 	    if((pfp_generation_v->at(i_a) ==2) &&(trk_score_v->at(i_a) >= 0.5)
 	       && (trk_llr_pid_score_v->at(i_a) > -1) && (trk_llr_pid_score_v->at(i_a) < 2)
@@ -844,7 +854,7 @@ void ccpi_analysis_jn(){            //first bracket
 
 
 		sel_has_muon_candidate = true;
-
+		
 		if(muon_index == -1){
 		  muon_index = i_a;
 		}
@@ -861,15 +871,15 @@ void ccpi_analysis_jn(){            //first bracket
 	    muon_in_gap = ((pfnplanehits_U->at(muon_index)>=1)&&
 			   (pfnplanehits_V->at(muon_index)>=1)&& (pfnplanehits_Y->at(muon_index)>=1));
 	  }
+	  
+	  
+	  
 
-							
-      
-
-
+	  
 	  //PION INDEX SELECTION
 
 	  for (size_t i_b = 0; i_b < trk_len_v->size(); i_b++){
-
+	    
 	    if((pfp_generation_v->at(i_b) ==2) &&(trk_score_v->at(i_b) >= 0.5)
 	       && (trk_llr_pid_score_v->at(i_b) > -1) && (trk_llr_pid_score_v->at(i_b) < 2)
 	       && (trk_bragg_p_v->at(i_b)  > 0) && (trk_bragg_p_v->at(i_b)  < 500)
@@ -880,18 +890,18 @@ void ccpi_analysis_jn(){            //first bracket
 	       ){
 
 
-
+	      
 	      TVector3 track_start_ib (trk_sce_start_x_v->at(i_b),trk_sce_start_y_v->at(i_b),trk_sce_start_z_v->at(i_b));
 	      TVector3 nu_to_track_dist_ib (track_start_ib - reco_primary_vtx);
-
-            TVector3 pion_endpoint(trk_sce_end_x_v->at(i_b),trk_sce_end_y_v->at(i_b),trk_sce_end_z_v->at(i_b));
-
-            if ( !(isContained(pion_endpoint)) ) continue;
-
-
+	      
+	      TVector3 pion_endpoint(trk_sce_end_x_v->at(i_b),trk_sce_end_y_v->at(i_b),trk_sce_end_z_v->at(i_b));
+	      
+	      if ( !(isContained(pion_endpoint)) ) continue;
+	      
+	      
 	      float tmvaOutput = 0.0;
 	      float tmvaOutput_pi = 0.0;
-
+	      
 	      trk_bragg_p_v_tmva = trk_bragg_p_v->at(i_b);
 	      trk_bragg_mu_v_tmva = trk_bragg_mu_v->at(i_b);
 	      trk_bragg_mip_v_tmva = trk_bragg_mip_v->at(i_b);
@@ -916,19 +926,19 @@ void ccpi_analysis_jn(){            //first bracket
 	      tmvaOutput_pi = tmvaReader_pi->EvaluateMVA("BDT");
 	
 
-
+	      
 	      if (    (trk_llr_pid_score_v->at(i_b) > 0.1) 
-		   && (nu_to_track_dist_ib.Mag() < 4.0)
-		   && (tmvaOutput    > -0.1) 
-		   && (tmvaOutput_pi > -0.1)
-		   && (trk_len_v->at(i_b) > pion_trk_len) 
-		   ){
-
-
+		      && (nu_to_track_dist_ib.Mag() < 4.0)
+		      && (tmvaOutput    > -0.1) 
+		      && (tmvaOutput_pi > -0.1)
+		      && (trk_len_v->at(i_b) > pion_trk_len) 
+		      ){
+		
+		
 		pion_number++;
 		pion_index = i_b;
-
-
+		
+		
 		if(pion_index == -1){
 		  pion_index = i_b;
 		}
@@ -939,13 +949,13 @@ void ccpi_analysis_jn(){            //first bracket
 	    }
 	  }
 
-
+	  
 	  if(pion_index != -1){
 	    pion_in_gap = ((pfnplanehits_U->at(pion_index)>0) && (pfnplanehits_V->at(pion_index)>0)&& (pfnplanehits_Y->at(pion_index)>0));
 	    TVector3 pion_endpoint(trk_sce_end_x_v->at(pion_index),trk_sce_end_y_v->at(pion_index),trk_sce_end_z_v->at(pion_index));
-
+	    
 	    if ((isContained(pion_endpoint)) &&pion_number==1 )	  sel_contained_pions = true;
-   
+	    
 	  }
 
     
@@ -971,17 +981,12 @@ void ccpi_analysis_jn(){            //first bracket
 
 
 	      
-	    // std::cout<<nPrimaryShowers<<"\t"<<shower_index<<"\t"<<nu_to_shower_dist.Mag()<<std::endl;
 	
 	    if((pfnplanehits_Y->at(shower_index)<50) && (pfnplanehits_Y->at(shower_index)>0) && (nu_to_shower_dist.Mag()>10)){
 
 	      shower_cut = true ;
 	    }
 
-	    //	  if(shr_moliere_avg_v->at(i_c) < 200){
-								
-	    //	    mol_avg = true;
-	    //	  }
 
 	  }
 	  else if (nPrimaryShowers==0)  shower_cut = true ;
@@ -1001,7 +1006,7 @@ void ccpi_analysis_jn(){            //first bracket
 	  Cuts[9] = Cuts[8] && opening_angle_cut; //muon-pion opening angle cut 
 	  Cuts[10]= Cuts[9] && (nonproton < 4) && (nPrimaryTracks <5); // no other charged pions
 
-///sanity check for the weights
+	  ///sanity check for the weights
 
          
 	  if(!(std::isfinite(weightTune) &&  (weightTune > 0 ) && (weightTune<30)) ) weightTune=1.0;
@@ -1010,27 +1015,27 @@ void ccpi_analysis_jn(){            //first bracket
 
 
 
-bool show = 0 ; //change to 0 to suppress the text and 1 to show it
-
-if(Cuts[10]==true && show){
-
-	if(signal)  std::cout<<"Signal event: "<<ientry<< std::endl;
-        if(!signal) std::cout<<"Background event: "<<ientry<<std::endl;
-        std::cout<<"MC Info"<<std::endl;
-	for(size_t i_mc=0; i_mc<mc_pdg->size();i_mc++){
-		TVector3 mc_mom(mc_px->at(i_mc), mc_py->at(i_mc), mc_pz->at(i_mc));
+	  bool show = 0 ; //change to 0 to suppress the text and 1 to show it
+	  
+	  if(Cuts[10]==true && show){
+	    
+	    if(signal)  std::cout<<"Signal event: "<<ientry<< std::endl;
+	    if(!signal) std::cout<<"Background event: "<<ientry<<std::endl;
+	    std::cout<<"MC Info"<<std::endl;
+	    for(size_t i_mc=0; i_mc<mc_pdg->size();i_mc++){
+	      TVector3 mc_mom(mc_px->at(i_mc), mc_py->at(i_mc), mc_pz->at(i_mc));
               std::cout<<i_mc<<"\t"<< mc_pdg->at(i_mc)<<"\t"<< mc_E->at(i_mc)<<"\t"<< mc_mom.Mag()<<std::endl;
-	}
-        std::cout<<"Reco Info"<<std::endl;
-
-	std::cout<<"index \t generation \t \t trk_score \t \t trk_len \t  pid \t \t \t tmva \t\t\t tmvapi \t\t\t bragg \t \t \t distance  \t PDG" <<std::endl;
-	 for (size_t i_b = 0; i_b < trk_len_v->size(); i_b++){
-		 if(pfp_generation_v->at(i_b)!=2) continue;
-
-
+	    }
+	    std::cout<<"Reco Info"<<std::endl;
+	    
+	    std::cout<<"index \t generation \t \t trk_score \t \t trk_len \t  pid \t \t \t tmva \t\t\t tmvapi \t\t\t bragg \t \t \t distance  \t PDG" <<std::endl;
+	    for (size_t i_b = 0; i_b < trk_len_v->size(); i_b++){
+	      if(pfp_generation_v->at(i_b)!=2) continue;
+	      
+	      
               float tmvaOutput = 0.0;
               float tmvaOutput_pi = 0.0;
-
+	      
               trk_bragg_p_v_tmva = trk_bragg_p_v->at(i_b);
               trk_bragg_mu_v_tmva = trk_bragg_mu_v->at(i_b);
               trk_bragg_mip_v_tmva = trk_bragg_mip_v->at(i_b);
@@ -1057,216 +1062,293 @@ if(Cuts[10]==true && show){
 
 
 
-	 	TVector3 track_start_ib (trk_sce_start_x_v->at(i_b),trk_sce_start_y_v->at(i_b),trk_sce_start_z_v->at(i_b));
-         	TVector3 nu_to_track_dist_ib (track_start_ib - reco_primary_vtx); 
-	        double distance = nu_to_track_dist_ib.Mag();	
-	       	std::cout<<i_b
-			 <<"\t \t"<<pfp_generation_v->at(i_b)
-			 <<"\t \t"<<trk_score_v->at(i_b)
-			 <<"\t \t"<<trk_len_v->at(i_b)
-   	          	 <<"\t \t"<<trk_llr_pid_score_v->at(i_b)
-			 <<"\t \t"<<tmvaOutput
-                         <<"\t \t"<<tmvaOutput_pi
-			 <<"\t \t"<<trk_bragg_p_v->at(i_b) 
-  	  		 <<"\t \t"<<distance;
-//		 	 <<"\t \t"<<backtracked_pdg->at(i_b);
-                 if(i_b==muon_index) std::cout<<"\t muon"<<std::endl;
-		 else if(i_b==pion_index)  std::cout<<"\t pion"<<std::endl;
-		 else if(i_b==shower_index) std::cout<<"\t shower"<<std::endl;
-	         else std::cout<<"\t"<<std::endl;
+	      TVector3 track_start_ib (trk_sce_start_x_v->at(i_b),trk_sce_start_y_v->at(i_b),trk_sce_start_z_v->at(i_b));
+	      TVector3 nu_to_track_dist_ib (track_start_ib - reco_primary_vtx); 
+	      double distance = nu_to_track_dist_ib.Mag();	
+	      std::cout<<i_b
+		       <<"\t \t"<<pfp_generation_v->at(i_b)
+		       <<"\t \t"<<trk_score_v->at(i_b)
+		       <<"\t \t"<<trk_len_v->at(i_b)
+		       <<"\t \t"<<trk_llr_pid_score_v->at(i_b)
+		       <<"\t \t"<<tmvaOutput
+		       <<"\t \t"<<tmvaOutput_pi
+		       <<"\t \t"<<trk_bragg_p_v->at(i_b) 
+		       <<"\t \t"<<distance;
+	      //		 	 <<"\t \t"<<backtracked_pdg->at(i_b);
+	      if(i_b==muon_index) std::cout<<"\t muon"<<std::endl;
+	      else if(i_b==pion_index)  std::cout<<"\t pion"<<std::endl;
+	      else if(i_b==shower_index) std::cout<<"\t shower"<<std::endl;
+	      else std::cout<<"\t"<<std::endl;
 
-	 }
+	    }
 
 
 
-	std::cin.get();
+	    std::cin.get();
 
-}
+	  }
 
-//        if(signal){  std::cout<<"Signal event"<<std::endl;}
+	  //        if(signal){  std::cout<<"Signal event"<<std::endl;}
 
 
 
 	  //Filling histograms for all variables and cuts for signal and background
 	  for(int c=0; c<ncuts; c++){
-             for(int i=0;i<2;i++){	
-	    int s=-1;
-	    if((i_f < 4) && signal ) s = 1;
-	    else if ((i_f <4) && !signal) s = 2;
-	    else if(i_f == 4) s = 3;//EXT
-	    else if(i_f == 5) s = 4;//Dirt
-	    else if(i_f == 6) s = 5;//Data
-	    else continue;
+	    for(int i=0;i<2;i++){	
+	      int s=-1;
+	      if((i_f < 4) && signal ) s = 1;
+	      else if ((i_f <4) && !signal) s = 2;
+	      else if(i_f == 4) s = 3;//EXT
+	      else if(i_f == 5) s = 4;//Dirt
+	      else if(i_f == 6) s = 5;//Data
+	      else continue;
 
-            if(i==0) s=0;
+	      if(i==0) s=0;
 	    
-	    if (Cuts[c]){
+	      if (Cuts[c]){
 
-	      Selected[c][s] += Scale[i_f]*ppfx_cv*weightTune;
-	   //   std::cout<<ppfx_cv<<"\t"<<weightTune<<"\t"<<Selected[c][s]<<std::endl;
-	  //    std::cin.get();
-//	      std::cout<<CutsName[c]<<"\t"<<Sample[s]<<"\t"<<i_f<<"\t"<<  Scale[i_f]<<"\t"<<Selected[c][s]<<std::endl;
+		Selected[c][s] += Scale[i_f]*ppfx_cv*weightTune;
 	
                
-	      if(i_f<4 && mc_pdg->at(0)==14) Histos[c][0][31]->Fill(mc_E->at(0), Scale[i_f]);
-              if(i_f<4 && mc_pdg->at(0)==12) Histos[c][0][32]->Fill(mc_E->at(0), Scale[i_f]);
+		if(i_f<4 && mc_pdg->at(0)==14) Histos[c][0][31]->Fill(mc_E->at(0), Scale[i_f]);
+		if(i_f<4 && mc_pdg->at(0)==12) Histos[c][0][32]->Fill(mc_E->at(0), Scale[i_f]);
 
-	      Histos[c][s][0]->Fill(topological_score,Scale[i_f]); //Variable[0]="Topological Score"; 
+		Histos[c][s][0]->Fill(topological_score,Scale[i_f]); //Variable[0]="Topological Score"; 
      	
-	      if(muon_index!=-1) {
-		TVector3 muon_start (trk_sce_start_x_v->at(muon_index),trk_sce_start_y_v->at(muon_index),trk_sce_start_z_v->at(muon_index));
-		TVector3 nu_to_track_dist (muon_start - reco_primary_vtx);
+		if(muon_index!=-1) {
+		  TVector3 muon_start (trk_sce_start_x_v->at(muon_index),trk_sce_start_y_v->at(muon_index),trk_sce_start_z_v->at(muon_index));
+		  TVector3 nu_to_track_dist (muon_start - reco_primary_vtx);
 
-		Histos[c][s][1]->Fill(trk_len_v->at(muon_index),Scale[i_f] ); //Variable[1]="Muon track length";
-		Histos[c][s][4]->Fill(trk_llr_pid_score_v->at(muon_index), Scale[i_f] );//  Variable[4]="Muon PID";
-		Histos[c][s][6]->Fill(nu_to_track_dist.Mag(), Scale[i_f]); //Variable[6]="MuonVtxDistance";
-		Histos[c][s][9]->Fill(pfnplanehits_U->at(muon_index), Scale[i_f]);  //Variable[9]="MuonUPlaneHits";
-		Histos[c][s][10]->Fill(pfnplanehits_Y->at(muon_index), Scale[i_f]); //Variable[10]="MuonYPlaneHits";
-		Histos[c][s][11]->Fill(pfnplanehits_V->at(muon_index), Scale[i_f]); //Variable[11]="MuonVPlaneHits";
+		  Histos[c][s][1]->Fill(trk_len_v->at(muon_index),Scale[i_f] ); //Variable[1]="Muon track length";
+		  Histos[c][s][4]->Fill(trk_llr_pid_score_v->at(muon_index), Scale[i_f] );//  Variable[4]="Muon PID";
+		  Histos[c][s][6]->Fill(nu_to_track_dist.Mag(), Scale[i_f]); //Variable[6]="MuonVtxDistance";
+		  Histos[c][s][9]->Fill(pfnplanehits_U->at(muon_index), Scale[i_f]);  //Variable[9]="MuonUPlaneHits";
+		  Histos[c][s][10]->Fill(pfnplanehits_Y->at(muon_index), Scale[i_f]); //Variable[10]="MuonYPlaneHits";
+		  Histos[c][s][11]->Fill(pfnplanehits_V->at(muon_index), Scale[i_f]); //Variable[11]="MuonVPlaneHits";
 
-		float tmvaOutput_mip = 0.0;
+		  float tmvaOutput_mip = 0.0;
 
-		int i_a=muon_index;
-		trk_bragg_p_v_tmva = trk_bragg_p_v->at(i_a);
-		trk_bragg_mu_v_tmva = trk_bragg_mu_v->at(i_a);
-		trk_bragg_mip_v_tmva = trk_bragg_mip_v->at(i_a);
-		trk_llr_pid_score_v_tmva = trk_llr_pid_score_v->at(i_a);
-		trk_score_v_tmva = trk_score_v->at(i_a);
-		trk_len_v_tmva = trk_len_v->at(i_a);
-		trk_sce_end_x_v_tmva = trk_sce_end_x_v->at(i_a);
-		trk_sce_end_y_v_tmva = trk_sce_end_y_v->at(i_a);
-		trk_sce_end_z_v_tmva = trk_sce_end_z_v->at(i_a);
-		tmvaOutput_mip = tmvaReader->EvaluateMVA("BDT");
+		  int i_a=muon_index;
+		  trk_bragg_p_v_tmva = trk_bragg_p_v->at(i_a);
+		  trk_bragg_mu_v_tmva = trk_bragg_mu_v->at(i_a);
+		  trk_bragg_mip_v_tmva = trk_bragg_mip_v->at(i_a);
+		  trk_llr_pid_score_v_tmva = trk_llr_pid_score_v->at(i_a);
+		  trk_score_v_tmva = trk_score_v->at(i_a);
+		  trk_len_v_tmva = trk_len_v->at(i_a);
+		  trk_sce_end_x_v_tmva = trk_sce_end_x_v->at(i_a);
+		  trk_sce_end_y_v_tmva = trk_sce_end_y_v->at(i_a);
+		  trk_sce_end_z_v_tmva = trk_sce_end_z_v->at(i_a);
+		  tmvaOutput_mip = tmvaReader->EvaluateMVA("BDT");
 
-		Histos[c][s][23]->Fill(tmvaOutput_mip, Scale[i_f] );  //Variable[23]="PionTMVAMip";
+		  Histos[c][s][23]->Fill(tmvaOutput_mip, Scale[i_f] );  //Variable[23]="PionTMVAMip";
 
-	        Histos[c][s][26]->Fill(trk_range_muon_mom_v->at(muon_index), Scale[i_f]);       
-	        Histos[c][s][27]->Fill(trk_mcs_muon_mom_v->at(muon_index), Scale[i_f]);
+		  Histos[c][s][26]->Fill(trk_range_muon_mom_v->at(muon_index), Scale[i_f]);       
+		  Histos[c][s][27]->Fill(trk_mcs_muon_mom_v->at(muon_index), Scale[i_f]);
 
-		//trk_mcs_muon_mom_v;
-        	//trk_range_muon_mom_v;
-		//
-	        TVector3 dir(trk_dir_x_v->at(muon_index),trk_dir_y_v->at(muon_index),trk_dir_z_v->at(muon_index));
-                Histos[c][s][34]->Fill(dir.Theta(),Scale[i_f]);
-                Histos[c][s][35]->Fill(dir.CosTheta(),Scale[i_f]);
-                Histos[c][s][36]->Fill(dir.Phi(),Scale[i_f]);
-
-
-		Histos[c][s][43]->Fill(trk_sce_start_x_v->at(muon_index), Scale[i_f]);
-                Histos[c][s][44]->Fill(trk_sce_start_y_v->at(muon_index), Scale[i_f]);
-                Histos[c][s][45]->Fill(trk_sce_start_z_v->at(muon_index), Scale[i_f]);
+		  //trk_mcs_muon_mom_v;
+		  //trk_range_muon_mom_v;
+		  //
+		  TVector3 dir(trk_dir_x_v->at(muon_index),trk_dir_y_v->at(muon_index),trk_dir_z_v->at(muon_index));
+		  Histos[c][s][34]->Fill(dir.Theta(),Scale[i_f]);
+		  Histos[c][s][35]->Fill(dir.CosTheta(),Scale[i_f]);
+		  Histos[c][s][36]->Fill(dir.Phi(),Scale[i_f]);
 
 
-	      }
-
-	      if(pion_index!=-1) {
-		TVector3 pion_start (trk_sce_start_x_v->at(pion_index),trk_sce_start_y_v->at(pion_index),trk_sce_start_z_v->at(pion_index));
-		TVector3 nu_to_track_dist (pion_start - reco_primary_vtx);
-
-		Histos[c][s][2]->Fill(trk_len_v->at(pion_index), Scale[i_f]);//  Variable[2]="Pion track length";
-		Histos[c][s][5]->Fill(trk_llr_pid_score_v->at(pion_index),Scale[i_f] );//  Variable[5]="Pion PID";
-		Histos[c][s][7]->Fill(nu_to_track_dist.Mag(),Scale[i_f]); //Variable[7]="PionVtxDistance";
-		Histos[c][s][12]->Fill(pfnplanehits_U->at(pion_index),Scale[i_f]);  //Variable[12]="PionUPlaneHits";
-		Histos[c][s][13]->Fill(pfnplanehits_Y->at(pion_index),Scale[i_f]);  //Variable[13]="PionYPlaneHits";
-		Histos[c][s][14]->Fill(pfnplanehits_V->at(pion_index),Scale[i_f]);  //Variable[14]="PionVPlaneHits";
-		float tmvaOutput = 0.0;
-		float tmvaOutput_pi = 0.0;
-		int i_b=pion_index;
-		trk_bragg_p_v_tmva = trk_bragg_p_v->at(i_b);
-		trk_bragg_mu_v_tmva = trk_bragg_mu_v->at(i_b);
-		trk_bragg_mip_v_tmva = trk_bragg_mip_v->at(i_b);
-		trk_llr_pid_score_v_tmva = trk_llr_pid_score_v->at(i_b);
-		trk_score_v_tmva = trk_score_v->at(i_b);
-		trk_len_v_tmva = trk_len_v->at(i_b);
-		trk_sce_end_x_v_tmva = trk_sce_end_x_v->at(i_b);
-		trk_sce_end_y_v_tmva = trk_sce_end_y_v->at(i_b);
-		trk_sce_end_z_v_tmva = trk_sce_end_z_v->at(i_b);
-		tmvaOutput = tmvaReader->EvaluateMVA("BDT");
+		  Histos[c][s][43]->Fill(trk_sce_start_x_v->at(muon_index), Scale[i_f]);
+		  Histos[c][s][44]->Fill(trk_sce_start_y_v->at(muon_index), Scale[i_f]);
+		  Histos[c][s][45]->Fill(trk_sce_start_z_v->at(muon_index), Scale[i_f]);
 
 
-		trk_bragg_p_v_tmva_pi = trk_bragg_p_v->at(i_b);
-		trk_bragg_mu_v_tmva_pi = trk_bragg_mu_v->at(i_b);
-		trk_bragg_mip_v_tmva_pi = trk_bragg_mip_v->at(i_b);
-		trk_llr_pid_score_v_tmva_pi = trk_llr_pid_score_v->at(i_b);
-		trk_score_v_tmva_pi = trk_score_v->at(i_b);
-		trk_len_v_tmva_pi = trk_len_v->at(i_b);
-		trk_sce_end_x_v_tmva_pi = trk_sce_end_x_v->at(i_b);
-		trk_sce_end_y_v_tmva_pi = trk_sce_end_y_v->at(i_b);
-		trk_sce_end_z_v_tmva_pi = trk_sce_end_z_v->at(i_b);
-		tmvaOutput_pi = tmvaReader_pi->EvaluateMVA("BDT");
+		}
+
+		if(pion_index!=-1) {
+		  TVector3 pion_start (trk_sce_start_x_v->at(pion_index),trk_sce_start_y_v->at(pion_index),trk_sce_start_z_v->at(pion_index));
+		  TVector3 nu_to_track_dist (pion_start - reco_primary_vtx);
+
+		  Histos[c][s][2]->Fill(trk_len_v->at(pion_index), Scale[i_f]);//  Variable[2]="Pion track length";
+		  Histos[c][s][5]->Fill(trk_llr_pid_score_v->at(pion_index),Scale[i_f] );//  Variable[5]="Pion PID";
+		  Histos[c][s][7]->Fill(nu_to_track_dist.Mag(),Scale[i_f]); //Variable[7]="PionVtxDistance";
+		  Histos[c][s][12]->Fill(pfnplanehits_U->at(pion_index),Scale[i_f]);  //Variable[12]="PionUPlaneHits";
+		  Histos[c][s][13]->Fill(pfnplanehits_Y->at(pion_index),Scale[i_f]);  //Variable[13]="PionYPlaneHits";
+		  Histos[c][s][14]->Fill(pfnplanehits_V->at(pion_index),Scale[i_f]);  //Variable[14]="PionVPlaneHits";
+		  float tmvaOutput = 0.0;
+		  float tmvaOutput_pi = 0.0;
+		  int i_b=pion_index;
+		  trk_bragg_p_v_tmva = trk_bragg_p_v->at(i_b);
+		  trk_bragg_mu_v_tmva = trk_bragg_mu_v->at(i_b);
+		  trk_bragg_mip_v_tmva = trk_bragg_mip_v->at(i_b);
+		  trk_llr_pid_score_v_tmva = trk_llr_pid_score_v->at(i_b);
+		  trk_score_v_tmva = trk_score_v->at(i_b);
+		  trk_len_v_tmva = trk_len_v->at(i_b);
+		  trk_sce_end_x_v_tmva = trk_sce_end_x_v->at(i_b);
+		  trk_sce_end_y_v_tmva = trk_sce_end_y_v->at(i_b);
+		  trk_sce_end_z_v_tmva = trk_sce_end_z_v->at(i_b);
+		  tmvaOutput = tmvaReader->EvaluateMVA("BDT");
 
 
-		Histos[c][s][21]->Fill(tmvaOutput,Scale[i_f] );  //Variable[21]="PionTMVAMip";
-		Histos[c][s][22]->Fill(tmvaOutput_pi,Scale[i_f] );  //Variable[22]="PionTMVAPi";
-  	        Histos[c][s][24]->Fill(trk_range_muon_mom_v->at(pion_index), Scale[i_f]);
-                Histos[c][s][25]->Fill(trk_mcs_muon_mom_v->at(pion_index), Scale[i_f]);
-
-                TVector3 dir(trk_dir_x_v->at(pion_index),trk_dir_y_v->at(pion_index),trk_dir_z_v->at(pion_index));
-                Histos[c][s][37]->Fill(dir.Theta(),Scale[i_f]);
-		Histos[c][s][38]->Fill(dir.CosTheta(),Scale[i_f]);
-                Histos[c][s][39]->Fill(dir.Phi(),Scale[i_f]);
-
-
-                Histos[c][s][46]->Fill(trk_sce_start_x_v->at(pion_index), Scale[i_f]);
-                Histos[c][s][47]->Fill(trk_sce_start_y_v->at(pion_index), Scale[i_f]);
-                Histos[c][s][48]->Fill(trk_sce_start_z_v->at(pion_index), Scale[i_f]);
+		  trk_bragg_p_v_tmva_pi = trk_bragg_p_v->at(i_b);
+		  trk_bragg_mu_v_tmva_pi = trk_bragg_mu_v->at(i_b);
+		  trk_bragg_mip_v_tmva_pi = trk_bragg_mip_v->at(i_b);
+		  trk_llr_pid_score_v_tmva_pi = trk_llr_pid_score_v->at(i_b);
+		  trk_score_v_tmva_pi = trk_score_v->at(i_b);
+		  trk_len_v_tmva_pi = trk_len_v->at(i_b);
+		  trk_sce_end_x_v_tmva_pi = trk_sce_end_x_v->at(i_b);
+		  trk_sce_end_y_v_tmva_pi = trk_sce_end_y_v->at(i_b);
+		  trk_sce_end_z_v_tmva_pi = trk_sce_end_z_v->at(i_b);
+		  tmvaOutput_pi = tmvaReader_pi->EvaluateMVA("BDT");
 
 
+		  Histos[c][s][21]->Fill(tmvaOutput,Scale[i_f] );  //Variable[21]="PionTMVAMip";
+		  Histos[c][s][22]->Fill(tmvaOutput_pi,Scale[i_f] );  //Variable[22]="PionTMVAPi";
+		  Histos[c][s][24]->Fill(trk_range_muon_mom_v->at(pion_index), Scale[i_f]);
+		  Histos[c][s][25]->Fill(trk_mcs_muon_mom_v->at(pion_index), Scale[i_f]);
 
-	      }
-	      if((muon_index!= -1) && (pion_index!= -1)) {
-		TVector3 muon_start (trk_sce_start_x_v->at(muon_index),trk_sce_start_y_v->at(muon_index),trk_sce_start_z_v->at(muon_index));
-		TVector3 pion_start (trk_sce_start_x_v->at(pion_index),trk_sce_start_y_v->at(pion_index),trk_sce_start_z_v->at(pion_index));
-		TVector3 pion_muon_dist (muon_start - pion_start);
+		  TVector3 dir(trk_dir_x_v->at(pion_index),trk_dir_y_v->at(pion_index),trk_dir_z_v->at(pion_index));
+		  Histos[c][s][37]->Fill(dir.Theta(),Scale[i_f]);
+		  Histos[c][s][38]->Fill(dir.CosTheta(),Scale[i_f]);
+		  Histos[c][s][39]->Fill(dir.Phi(),Scale[i_f]);
 
 
-		Histos[c][s][3]->Fill(mu_pi_opening_angle,Scale[i_f]);//  Variable[3]="Mu-Pi Opening angle";
-		Histos[c][s][8]->Fill(pion_muon_dist.Mag(),Scale[i_f]); // Variable[8]="MuonPionDistance";
+		  Histos[c][s][46]->Fill(trk_sce_start_x_v->at(pion_index), Scale[i_f]);
+		  Histos[c][s][47]->Fill(trk_sce_start_y_v->at(pion_index), Scale[i_f]);
+		  Histos[c][s][48]->Fill(trk_sce_start_z_v->at(pion_index), Scale[i_f]);
 
 
 
+		}
+		if((muon_index!= -1) && (pion_index!= -1)) {
+		  TVector3 muon_start (trk_sce_start_x_v->at(muon_index),trk_sce_start_y_v->at(muon_index),trk_sce_start_z_v->at(muon_index));
+		  TVector3 pion_start (trk_sce_start_x_v->at(pion_index),trk_sce_start_y_v->at(pion_index),trk_sce_start_z_v->at(pion_index));
+		  TVector3 pion_muon_dist (muon_start - pion_start);
 
-	        TVector3 muon_track_start(trk_sce_start_x_v->at(muon_index),trk_sce_start_y_v->at(muon_index),trk_sce_start_z_v->at(muon_index));
-    		TVector3 pion_track_start(trk_sce_start_x_v->at(pion_index),trk_sce_start_y_v->at(pion_index),trk_sce_start_z_v->at(pion_index));
-		Histos[c][s][33]->Fill((muon_track_start-pion_track_start).Mag(),Scale[i_f]);
+
+		  Histos[c][s][3]->Fill(mu_pi_opening_angle,Scale[i_f]);//  Variable[3]="Mu-Pi Opening angle";
+		  Histos[c][s][8]->Fill(pion_muon_dist.Mag(),Scale[i_f]); // Variable[8]="MuonPionDistance";
 
 
 
 
-
-	      }
-	      if(shower_index !=-1){
-
-		TVector3 shower_start (trk_sce_start_x_v->at(shower_index),trk_sce_start_y_v->at(shower_index),trk_sce_start_z_v->at(shower_index));
-		TVector3 nu_to_shower_dist (shower_start - reco_primary_vtx);
-
-
-		Histos[c][s][15]->Fill(pfnplanehits_U->at(shower_index),Scale[i_f]);  //Variable[15]="ShowerUPlaneHits";
-		Histos[c][s][16]->Fill(pfnplanehits_Y->at(shower_index),Scale[i_f]);  //Variable[16]="ShowerYPlaneHits";
-		Histos[c][s][17]->Fill(pfnplanehits_V->at(shower_index),Scale[i_f]);  //Variable[17]="ShowerVPlaneHits";
-
-		Histos[c][s][20]->Fill(nu_to_shower_dist.Mag(),Scale[i_f]);// Variable[20]="ShowerVtxDistance";
-
-		TVector3 dir(trk_dir_x_v->at(shower_index),trk_dir_y_v->at(shower_index),trk_dir_z_v->at(shower_index));
-                Histos[c][s][40]->Fill(dir.Theta(),Scale[i_f]);
-                Histos[c][s][41]->Fill(dir.CosTheta(),Scale[i_f]);
-                Histos[c][s][42]->Fill(dir.Phi(),Scale[i_f]);
-
-
-	      }
-
-	      Histos[c][s][18]->Fill(nPrimaryShowers,Scale[i_f]); // Variable[18]="NPrimaryShowers";
-	      Histos[c][s][19]->Fill(nPrimaryTracks,Scale[i_f]); // Variable[19]="NPrimaryTracks";
-	
-  	      Histos[c][s][28]->Fill(mc_muon_momentum,Scale[i_f]);
-	      Histos[c][s][29]->Fill(mc_pion_momentum,Scale[i_f]);
-              Histos[c][s][30]->Fill(mc_opening_angle,Scale[i_f]);
+		  TVector3 muon_track_start(trk_sce_start_x_v->at(muon_index),trk_sce_start_y_v->at(muon_index),trk_sce_start_z_v->at(muon_index));
+		  TVector3 pion_track_start(trk_sce_start_x_v->at(pion_index),trk_sce_start_y_v->at(pion_index),trk_sce_start_z_v->at(pion_index));
+		  Histos[c][s][33]->Fill((muon_track_start-pion_track_start).Mag(),Scale[i_f]);
 
 
 
-	    } 
+
+
+		}
+		if(shower_index !=-1){
+
+		  TVector3 shower_start (trk_sce_start_x_v->at(shower_index),trk_sce_start_y_v->at(shower_index),trk_sce_start_z_v->at(shower_index));
+		  TVector3 nu_to_shower_dist (shower_start - reco_primary_vtx);
+
+
+		  Histos[c][s][15]->Fill(pfnplanehits_U->at(shower_index),Scale[i_f]);  //Variable[15]="ShowerUPlaneHits";
+		  Histos[c][s][16]->Fill(pfnplanehits_Y->at(shower_index),Scale[i_f]);  //Variable[16]="ShowerYPlaneHits";
+		  Histos[c][s][17]->Fill(pfnplanehits_V->at(shower_index),Scale[i_f]);  //Variable[17]="ShowerVPlaneHits";
+
+		  Histos[c][s][20]->Fill(nu_to_shower_dist.Mag(),Scale[i_f]);// Variable[20]="ShowerVtxDistance";
+
+		  TVector3 dir(trk_dir_x_v->at(shower_index),trk_dir_y_v->at(shower_index),trk_dir_z_v->at(shower_index));
+		  Histos[c][s][40]->Fill(dir.Theta(),Scale[i_f]);
+		  Histos[c][s][41]->Fill(dir.CosTheta(),Scale[i_f]);
+		  Histos[c][s][42]->Fill(dir.Phi(),Scale[i_f]);
+
+
+		}
+	      
+		Histos[c][s][18]->Fill(nPrimaryShowers,Scale[i_f]); // Variable[18]="NPrimaryShowers";
+		Histos[c][s][19]->Fill(nPrimaryTracks,Scale[i_f]); // Variable[19]="NPrimaryTracks";
+	      
+		Histos[c][s][28]->Fill(mc_muon_momentum,Scale[i_f]);
+		Histos[c][s][29]->Fill(mc_pion_momentum,Scale[i_f]);
+		Histos[c][s][30]->Fill(mc_opening_angle,Scale[i_f]);
+	      
+
+//MC Truths
+//
+/* 
+  Variable[49]="TrueMuonMomentum";
+  Variable[50]="TrueMuonCosTheta";
+  Variable[51]="TrueMuonTheta";
+  Variable[52]="TrueMuonPhi";
+
+  Variable[53]="TrueMuonMomentum";
+  Variable[54]="TrueMuonCosTheta";
+  Variable[55]="TrueMuonTheta";
+  Variable[56]="TrueMuonPhi";
+
+  Variable[57]="NuEnergy"; //true_nu_px
+  Variable[58]="Q2";
+  Variable[59]="W";
+*/
+             if(signal && abs(mc_pdg->at(0))!=14){//only signal
+	     TVector3 nu_mom (true_nu_px, true_nu_py, true_nu_pz);
+	     TLorentzVector nu_fourmom (true_nu_px, true_nu_py, true_nu_pz, nu_mom.Mag() );
+             Histos[c][s][57]->Fill(nu_mom.Mag(), Scale[i_f]);
+	     TLorentzVector inv(0,0,0,0);
+	     double Q2 =-1;
+	     double W =-1; 
+             double muonE=-1;
+	     double q0=-1;
+//	     std::cout<<"-----------------------------------"<<std::endl;
+	     for(size_t i_mc=0; i_mc<mc_pdg->size();i_mc++){
+	     TLorentzVector fourmom (mc_px->at(i_mc), mc_py->at(i_mc), mc_pz->at(i_mc), mc_E->at(i_mc));
+
+             TVector3 mom (mc_px->at(i_mc), mc_py->at(i_mc), mc_pz->at(i_mc));
+	     double energy = mc_E->at(i_mc);
+
+
+  //          std::cout<<i_mc<<"\t"<< mc_pdg->at(i_mc)<<"\t"<< mc_E->at(i_mc)<<"\t"<<fourmom.Mag()<<std::endl;
+
+              if(abs(mc_pdg->at(i_mc)) == 13) {
+ 	      Q2=-(nu_fourmom - fourmom).Mag2();
+	      muonE = mc_E->at(i_mc);
+	      Histos[c][s][58]->Fill(Q2, Scale[i_f]);
+              Histos[c][s][49]->Fill(mom.Mag(), Scale[i_f]);
+              Histos[c][s][50]->Fill(mom.CosTheta(), Scale[i_f]);
+              Histos[c][s][51]->Fill(mom.Theta(), Scale[i_f]);
+              Histos[c][s][52]->Fill(mom.Phi(), Scale[i_f]);
+	      
+
+
+              }
+              if(abs(mc_pdg->at(i_mc)) == 211) {
+
+              Histos[c][s][53]->Fill(mom.Mag(), Scale[i_f]);
+              Histos[c][s][54]->Fill(mom.CosTheta(), Scale[i_f]);
+              Histos[c][s][55]->Fill(mom.Theta(), Scale[i_f]);
+              Histos[c][s][56]->Fill(mom.Phi(), Scale[i_f]);
+		      
+              }
+
+//	      std::cout<<i_mc<<"\t"<< mc_pdg->at(i_mc)<<"\t"<< mc_E->at(i_mc)<<"\t"<<fourmom.Mag()<<std::endl;
+  //            fourmom.Print();
+
+
 	     }
-	  }
+	      q0= nu_mom.Mag() - muonE;
+	      double m_p = 0.95;
+	      double W2=m_p*m_p + 2*m_p*q0 -Q2;
+if(W2<=m_p*m_p){
+	                    std::cout<<"Q2="<<Q2<<"\t W="<<sqrt(W2)<<"\t q0="<<q0<<"\t nuE="<<nu_mom.Mag()<<"\t muE="<<muonE<<std::endl;
+			    double W2MEC=2*m_p*2*m_p + 2*2*m_p*q0 -Q2;;
+			    std::cout<<sqrt(W2)<<"--->"<<sqrt(W2MEC)<<std::endl;
+			    W2=W2MEC;
+//	      cin.get();
+}
+   	      W=sqrt(W2);
+              Histos[c][s][59]->Fill(W, Scale[i_f]);
+
+	      }//only signal
+
+
+
+		
+	      
+	      }//IF CUT  
+	    }
+	  }// LOOP OVER CUTS
 
 
          
@@ -1292,7 +1374,7 @@ if(Cuts[10]==true && show){
 
 
 
-	std::cout<< std::setprecision(1)<<std::fixed;
+      std::cout<< std::setprecision(1)<<std::fixed;
 
       double purity = 0.0;
       double efficiency = 0.0;
@@ -1320,8 +1402,8 @@ if(Cuts[10]==true && show){
       c1->Divide(5,2);
 
       TLegend *l1= new TLegend(0.1,0.7,0.3,0.9);
-	l1->SetHeader("Samples");
-	for(int s=0;s<nsamples;s++)
+      l1->SetHeader("Samples");
+      for(int s=0;s<nsamples;s++)
 	l1->AddEntry(Histos[0][s][0], Sample[s]);
 
 
@@ -1345,15 +1427,15 @@ if(Cuts[10]==true && show){
 	  //Histos[c][5][i]->Draw("same");
 	  // Histos[c][0][i]->Draw("same");
 
-        if(c+1==ncuts) l1->Draw();
+	  if(c+1==ncuts) l1->Draw();
 	}
 	c1->Print(directory+Variable[i]+".png");
       }
 
 
 
-	 for(int i = 28; i<30; i++){
-            for(int c=1;c<ncuts;c++){
+      for(int i = 28; i<30; i++){
+	for(int c=1;c<ncuts;c++){
         
         
           c1->cd(c+1);
@@ -1366,6 +1448,22 @@ if(Cuts[10]==true && show){
         }
         c1->Print(directory+"Eff"+Variable[i]+".png");
       }
+
+  for(int i = 49; i<60; i++){
+        for(int c=1;c<ncuts;c++){
+
+
+          c1->cd(c+1);
+
+
+          Histos[c][1][i]->Divide(Histos[0][1][i]);
+          Histos[c][1][i]->Draw();
+
+
+        }
+        c1->Print(directory+"Eff"+Variable[i]+".png");
+      }
+
 
 
 
